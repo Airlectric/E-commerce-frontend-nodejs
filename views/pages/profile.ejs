@@ -1,0 +1,26 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <!-- Profile Picture and Details -->
+    <div class="col-md-4 text-center">
+      <img 
+        id="profileImage" 
+        src="<%= user.profileImage || 'https://via.placeholder.com/150' %>" 
+        alt="User Image" 
+        class="img-fluid rounded-circle mb-3 border border-secondary"
+        style="width: 150px; height: 150px; object-fit: cover;"
+      >
+      <p class="text-muted">User ID: <%= user.id %></p>
+    </div>
+    <div class="col-md-8">
+      <h2><%= user.username %></h2>
+      <p><%= user.email %></p>
+      <p>Role: <span class="badge badge-info"><%= user.role %></span></p>
+      <p id="profileBio"><%= user.bio || 'Bio not set.' %></p>
+      <a href="/edit" class="btn btn-warning mt-3">Edit Profile</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
