@@ -1,25 +1,159 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <!-- Profile Picture and Details -->
-    <div class="col-md-4 text-center">
-      <img 
-        id="profileImage" 
-        src="<%= user.profileImage || 'https://via.placeholder.com/150' %>" 
-        alt="User Image" 
-        class="img-fluid rounded-circle mb-3 border border-secondary"
-        style="width: 150px; height: 150px; object-fit: cover;"
-      >
-      <p class="text-muted">User ID: <%= user.id %></p>
-    </div>
-    <div class="col-md-8">
-      <h2><%= user.username %></h2>
-      <p><%= user.email %></p>
-      <p>Role: <span class="badge badge-info"><%= user.role %></span></p>
-      <p id="profileBio"><%= user.bio || 'Bio not set.' %></p>
-      <a href="/edit" class="btn btn-warning mt-3">Edit Profile</a>
-    </div>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar for Profile Information -->
+    <nav 
+      id="sidebar" 
+      class="col-md-3 col-lg-2 d-md-block sidebar collapse show"
+      style="
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(5px); 
+        border-right: 1px solid rgba(0, 0, 0, 0.1); 
+        min-height: 50vh;
+        position: sticky; 
+        top: 0;
+      ">
+      <div class="position-sticky">
+        <div 
+          class="text-center p-3 border-bottom"
+          style="background-color: rgba(255, 255, 255, 0.6); border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+          <img
+            id="profileImage"
+            src="<%= user.profileImage || 'https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg' %>"
+            alt="User Image"
+            class="img-fluid rounded-circle mb-3 border border-secondary"
+            style="width: 150px; height: 150px; object-fit: cover;"
+          >
+          <h5 style="font-weight: bold;"><%= user.username %></h5>
+          <p class="text-muted" style="font-size: 0.9rem;"><%= user.email %></p>
+          <p>
+            Role: 
+            <span 
+              class="badge"
+              style="background-color: <%= user.role === 'SHOP_OWNER' ? '#007bff' : '#28a745' %>; color: white;">
+              <%= user.role %>
+            </span>
+          </p>
+          <p id="profileBio" class="text-muted" style="font-size: 0.9rem;">
+            <%= user.bio || 'No bio available.' %>
+          </p>
+          <a 
+            href="/edit" 
+            class="btn btn-warning btn-sm"
+            style="padding: 5px 15px; font-size: 0.8rem;">
+            Edit Profile
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="padding-top: 20px;">
+      <div class="row">
+        <% if (user.role === 'SHOP_OWNER') { %>
+          <!-- Shop Owner Specific Content -->
+          <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://img.freepik.com/premium-vector/inventory-management-vector-illustration-flat-2_764382-214662.jpg?w=740" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="Add Product">
+              <div class="card-body">
+                <h5 class="card-title">Add Product</h5>
+                <p class="card-text">Upload and showcase your latest products for customers.</p>
+                <a href="/products/add" class="btn btn-primary">Add Product</a>
+              </div>
+            </div>
+          </div>
+		  <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://img.freepik.com/free-vector/moving-out-cardboard-box-illustration_52683-80895.jpg" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="Add Category">
+              <div class="card-body">
+                <h5 class="card-title">Categories</h5>
+                <p class="card-text">Create new categories to classify your products if there are none.</p>
+                <a href="/categories/" class="btn btn-primary">Add Category</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://img.freepik.com/premium-vector/inventory-control-illustration-concept-illustration-websites-landing-pages-mobile-applications-posters-banners_108061-773.jpg" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="View Products">
+              <div class="card-body">
+                <h5 class="card-title">View Products</h5>
+                <p class="card-text">Manage your inventory and products in one place.</p>
+                <a href="/products" class="btn btn-primary">View Products</a>
+              </div>
+            </div>
+          </div>
+        <% } else if (user.role === 'USER') { %>
+          <!-- Regular User Content -->
+          <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://static.vecteezy.com/system/resources/previews/002/194/930/non_2x/3d-shopping-online-store-for-sale-mobile-e-commerce-3d-pink-pastel-background-shop-online-on-mobile-app-24-hours-shopping-cart-credit-card-minimal-shopping-online-store-device-3d-rendering-vector.jpg" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="Products">
+              <div class="card-body">
+                <h5 class="card-title">Browse Products</h5>
+                <p class="card-text">Explore products from a variety of categories.</p>
+                <a href="/order" class="btn btn-primary">View Products</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://www.startyourbusinessmag.com/wp-content/uploads/2024/08/ecommerce_shopping_1724235919.png" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="Orders">
+              <div class="card-body">
+                <h5 class="card-title">Orders</h5>
+                <p class="card-text">Track and manage your orders and view order history.</p>
+                <a href="/order/orders" class="btn btn-primary">View Orders</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div 
+              class="card shadow-sm" 
+              style="border: 1px solid rgba(0, 0, 0, 0.1);">
+              <img 
+                src="https://png.pngtree.com/background/20231017/original/pngtree-promotional-flash-sale-concept-gift-boxes-in-a-shopping-cart-on-picture-image_5591346.jpg" 
+                class="card-img-top"
+                style="height: 200px; object-fit: cover;" 
+                alt="Cart">
+              <div class="card-body">
+                <h5 class="card-title">My Cart</h5>
+                <p class="card-text">Manage items in your cart and proceed to checkout.</p>
+                <a href="/order/cart" class="btn btn-primary">View Cart</a>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </main>
   </div>
 </div>
 

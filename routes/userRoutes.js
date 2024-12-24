@@ -21,17 +21,22 @@ router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     console.log("Received login request:", { username, password });
 
-    // Send a login request to the authentication service with credentials
-    const response = await axios.post(`${API_AUTH_URL}/login`, { username, password }, {
-      withCredentials: true, // Ensure cookies are sent and received
-    });
+    // Send a login request to the authentication service
+    const response = await axios.post(`${API_AUTH_URL}/login`, { username, password });
 
     console.log("Authentication service response:", response.data);
 
-    // Save user data in session
-    req.session.user = response.data.user;
+    // Extract tokens and user details from the response
+    const { accessToken, refreshToken, user } = response.data;
 
-    // Redirect to the profile page after successful login
+    // Store tokens and user details in the session
+    req.session.accessToken = accessToken;
+    req.session.refreshToken = refreshToken;
+    req.session.user = user;
+
+    console.log("Tokens and user details stored successfully in session.");
+
+    // Redirect to the profile page
     res.redirect("/profile");
   } catch (error) {
     console.error("Login Error:", error.response?.data || error.message);
@@ -39,6 +44,7 @@ router.post("/login", async (req, res) => {
     res.render("pages/login", { error: errorMessage });
   }
 });
+
 
 
 
@@ -65,41 +71,48 @@ router.post('/edit', async (req, res) => {
 });
 
 // Logout Handler
-router.post('/logout', async (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
-    if (!req.session.user) {
+    // Retrieve the user's ID and refresh token from session
+    const refreshToken = req.session.refreshToken;
+    const user = req.session.user;
+
+    if (!user || !refreshToken) {
       console.warn("Logout attempt by unauthenticated user.");
-      return res.status(401).json({ error: 'User not logged in' });
+      return res.status(401).json({ error: "User not logged in." });
     }
 
-    const userId = req.session.user.id;
-    console.log("User ID from session:", userId);
+    console.log("Logging out user:", user.id);
 
     // Step 1: Send request to revoke the refresh token
-    const { data } = await axios.post(`${process.env.API_AUTH_URL}/logout`, { userId });
+    const { data } = await axios.post(`${process.env.API_AUTH_URL}/logout`, { userId: user.id });
+
     if (data.error) {
       console.error("Failed to revoke refresh token:", data.error);
-      return res.status(500).json({ error: 'Failed to revoke token.' });
+      return res.status(500).json({ error: "Failed to revoke token." });
     }
 
     console.log("Refresh token revoked successfully.");
 
-    // Step 2: Destroy session and clear cookies
-    req.session.destroy(err => {
+    // Step 2: Destroy the session and clear tokens and user data
+    req.session.destroy((err) => {
       if (err) {
         console.error("Error destroying session:", err);
-        return res.status(500).json({ error: 'Failed to log out. Please try again.' });
+        return res.status(500).json({ error: "Failed to log out. Please try again." });
       }
 
       console.log("Session destroyed successfully.");
-      res.clearCookie('connect.sid'); // Clear the session cookie
-	  res.redirect('/');
+      res.clearCookie("connect.sid"); // Clear session cookie
+
+      // Redirect to login or home page after logout
+      res.redirect("/login");
     });
   } catch (error) {
-    console.error('Logout Error:', error.message || error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Logout Error:", error.message || error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 module.exports = router;

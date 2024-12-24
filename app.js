@@ -10,6 +10,9 @@ const axios = require('axios');
 const indexRoutes = require('./routes/indexRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orders/orderRoutes');
+const productRoutes = require('./routes/products/productRoutes');
+const categoryRoutes = require('./routes/products/categoryRoutes');
+const methodOverride = require('method-override');
 axios.defaults.withCredentials = true;
 
 const app = express();
@@ -19,6 +22,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(methodOverride('_method'));
+
 
 app.use(
   session({
@@ -26,13 +31,12 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
+      secure: false,  // Secure cookies in production
       httpOnly: true,
-      secure: false, // Set to true if using HTTPS
-      sameSite: 'strict', // Adjust as necessary
+	  maxAge: 30 * 60 * 1000
     },
   })
 );
-
 
 
 app.use((req, res, next) => {
@@ -40,15 +44,22 @@ app.use((req, res, next) => {
   next();
 });
 
+app.locals.env = process.env;
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/', indexRoutes);
 app.use('/user', userRoutes);
 app.use('/order', orderRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/products', productRoutes);
+
 
 // Set default app locals
 app.locals.title = "E-Commerce";

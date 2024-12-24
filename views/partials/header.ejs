@@ -3,16 +3,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title || "E-commerce Frontend" %></title>
 
-  <!-- Bootstrap CSS (for all pages) -->
+  <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa; /* Light background color */
+    }
+    .navbar {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    }
+    .navbar-brand {
+      font-weight: bold; /* Make brand name bold */
+    }
+    .nav-link {
+      transition: color 0.3s; /* Smooth transition for hover effect */
+    }
+    .nav-link:hover {
+      color: #007bff; /* Change color on hover */
+    }
+  </style>
 </head>
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">E-Commerce</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <% if (user) { %>

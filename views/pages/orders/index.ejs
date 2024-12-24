@@ -10,11 +10,30 @@
       <% products.forEach((product) => { %>
         <div class="col-md-4">
           <div class="card mb-4 shadow-sm">
-            <img src="<%= product.image %>" class="card-img-top" alt="<%= product.title %>">
+            <!-- Wrap the card image and title with a clickable link to the product details page -->
+            <a href="/order/product/<%= product._id %>">
+			  <% const baseUrl = process.env.API_IMAGE_URL || 'http://localhost:5000'; %> 
+				<% if (product.image) { %>
+				  <% if (product.image.startsWith('/uploads/')) { %>
+					<!-- Render local upload image with the full URL from environment variable -->
+					<img src="<%= baseUrl %>/images<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
+				  <% } else { %>
+					<!-- Render external image directly -->
+					<img src="<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
+				  <% } %>
+				<% } else { %>
+				  <!-- Render placeholder image if no image is provided -->
+				  <img src="/images/placeholder.png" class="card-img-top" alt="No Image Available" style="max-height: 200px; object-fit: cover;" />
+				<% } %>
+            </a>
             <div class="card-body">
-              <h5 class="card-title"><%= product.title %></h5>
+              <!-- Product title wrapped in a clickable link -->
+              <a href="/order/product/<%= product._id %>" class="card-title">
+                <h5><%= product.title %></h5>
+              </a>
               <p class="card-text">$<%= product.price %></p>
-              <form action="/cart" method="post">
+              <!-- The form for adding to cart -->
+              <form action="/order/cart" method="post">
                 <input type="hidden" name="productId" value="<%= product._id %>">
                 <input type="hidden" name="title" value="<%= product.title %>">
                 <input type="hidden" name="price" value="<%= product.price %>">

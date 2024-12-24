@@ -18,6 +18,7 @@ router.get('/register', (req, res) => {
 router.get('/login', (req, res) => {
   res.render('pages/login', { 
     error: null, 
+	API_AUTH_URL: process.env.API_AUTH_URL,
     title: "Login - E-Commerce" 
   });
 });

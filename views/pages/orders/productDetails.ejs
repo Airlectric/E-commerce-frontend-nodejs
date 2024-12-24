@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <%- include("../../partials/header"); %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details</title>
@@ -19,17 +20,33 @@
         <p><strong>Price:</strong> $<%= product.price.toFixed(2) %></p>
         <p><strong>Quantity Available:</strong> <%= product.quantity %></p>
         <p><%= product.description %></p>
-        <form id="order-form" action="/orders" method="POST">
+
+        <!-- Add to Cart Form -->
+        <form action="/order/cart" method="POST" class="mb-3">
+          <input type="hidden" name="productId" value="<%= product._id %>">
+          <input type="hidden" name="title" value="<%= product.title %>">
+          <input type="hidden" name="price" value="<%= product.price %>">
+          <div class="mb-3">
+            <label for="cart-quantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" id="cart-quantity" class="form-control" min="1" max="<%= product.quantity %>" value="1" required>
+          </div>
+          <button type="submit" class="btn btn-warning">Add to Cart</button>
+        </form>
+
+        <!-- Order Now Form -->
+        <form id="order-form" action="/order/checkout" method="POST">
           <input type="hidden" name="productId" value="<%= product._id %>">
           <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity</label>
-            <input type="number" name="quantity" id="quantity" class="form-control" min="1" max="<%= product.quantity %>" value="1" required>
+            <label for="order-quantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" id="order-quantity" class="form-control" min="1" max="<%= product.quantity %>" value="1" required>
           </div>
           <button type="submit" class="btn btn-primary">Order Now</button>
         </form>
-        <a href="/products" class="btn btn-secondary mt-3">Back to Products</a>
+
+        <a href="/order/" class="btn btn-secondary mt-3">Back to Products</a>
       </div>
     </div>
   </div>
+  <%- include("../../partials/footer"); %>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <%- include("../../partials/header"); %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shopping Cart</title>
@@ -17,16 +18,35 @@
       });
       document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
     }
+
+    // Initial update of total when the page loads
+    window.onload = updateTotal;
+
+    // Function to handle item removal
+    function removeItem(productId) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/order/cart/remove";
+
+      const hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.name = "productId";
+      hiddenInput.value = productId;
+
+      form.appendChild(hiddenInput);
+      document.body.appendChild(form);
+      form.submit();
+    }
   </script>
 </head>
 <body>
   <div class="container mt-5">
     <h1 class="mb-4">Shopping Cart</h1>
-    <form action="/orders" method="POST">
+    <form action="/order/checkout" method="POST">
       <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-striped">
           <thead>
-            <tr>
+            <tr class="table-primary">
               <th>Product</th>
               <th>Price</th>
               <th>Quantity</th>
@@ -36,25 +56,32 @@
           </thead>
           <tbody>
             <% cart.forEach(item => { %>
-            <tr class="cart-item" data-price="<%= item.price %>">
+            <tr class="cart-item" data-price="<%= parseFloat(item.price).toFixed(2) %>">
               <td><%= item.title %></td>
-              <td>$<%= item.price.toFixed(2) %></td>
+              <td>$<%= parseFloat(item.price).toFixed(2) %></td>
               <td>
                 <input type="number" name="products[<%= item._id %>][quantity]" class="form-control quantity" value="<%= item.quantity %>" min="1" max="<%= item.maxQuantity %>" onchange="updateTotal()">
               </td>
-              <td class="subtotal">$<%= (item.price * item.quantity).toFixed(2) %></td>
+              <td class="subtotal" id="subtotal-<%= item._id %>">
+                $<%= (item.price * item.quantity).toFixed(2) %>
+              </td>
               <td>
-                <button type="button" class="btn btn-danger btn-sm">Remove</button>
+                <!-- Remove button triggers the removeItem function -->
+                <button type="button" class="btn btn-danger mt-3" onclick="removeItem('<%= item.productId %>')">Remove</button>
               </td>
             </tr>
             <% }) %>
           </tbody>
         </table>
       </div>
-     
-      <button type="submit" class="btn btn-primary mt-3">Place Order</button>
+      
+      <div class="d-flex justify-content-between mt-3">
+        <h4>Total: <span id="total-price">$0.00</span></h4>
+        <button type="submit" class="btn btn-success">Place Order</button>
+      </div>
     </form>
-    <a href="/products" class="btn btn-secondary mt-3">Continue Shopping</a>
+    <a href="/order/" class="btn btn-secondary mt-3">Continue Shopping</a>
   </div>
+   <%- include("../../partials/footer"); %>
 </body>
 </html>
