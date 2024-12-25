@@ -74,11 +74,19 @@
             <td>$<%= parseFloat(product.price).toFixed(2) %></td>
             <td><%= product.description || 'No description available' %></td>
             <td>
-              <% if (product.imageUrl) { %>
-                <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="img-fluid">
-              <% } else { %>
-                <p>No image available</p>
-              <% } %>
+              <% const baseUrl = process.env.API_ORDERS_IMAGE_URL || 'http://localhost:6000'; %> 
+				<% if (product.image) { %>
+				  <% if (product.image.startsWith('/uploads/')) { %>
+					<!-- Render local upload image with the full URL from environment variable -->
+					<img src="<%= baseUrl %>/images<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
+				  <% } else { %>
+					<!-- Render external image directly -->
+					<img src="<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
+				  <% } %>
+				<% } else { %>
+				  <!-- Render placeholder image if no image is provided -->
+				  <img src="/images/placeholder.png" class="card-img-top" alt="No Image Available" style="max-height: 200px; object-fit: cover;" />
+				<% } %>
             </td>
           </tr>
         <% }) %>

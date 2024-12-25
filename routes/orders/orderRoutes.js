@@ -3,7 +3,6 @@ const axios = require("axios");
 
 const router = express.Router();
 const API_ORDER_URL = process.env.API_ORDER_URL;
-const API_PRODUCT_URL = process.env.API_PRODUCT_URL;
 
 // Middleware to ensure user authentication using session
 const ensureAuthenticated = (req, res, next) => {
@@ -17,22 +16,60 @@ const ensureAuthenticated = (req, res, next) => {
   }
 };
 
-// Home Page - List all products
-router.get("/", ensureAuthenticated, async (req, res) => {  // Ensure authentication here
+
+// Home Page - List all products or search based on query params
+router.get("/", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
-    console.log("Fetching products with access token:", accessToken);
+    const { title, description, category, price } = req.query;  // Get search filters from query params
 
-    const response = await axios.get(`${API_ORDER_URL}/products/`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+    // Prepare search query including price range
+    const searchQuery = {
+      title,
+      description,
+      category,
+      price: {
+        min: price?.min || 0,
+        max: price?.max || Number.MAX_VALUE
+      }
+    };
+
+    console.log("Fetching products with search criteria:", searchQuery);
+
+    let response;
+
+    if (title || description || category || price) {
+      // If there are search filters, perform a search
+      response = await axios.get(`${API_ORDER_URL}/products/search`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        params: searchQuery,  // Pass query params to search endpoint
+      });
+    } else {
+      // If no search filters, fetch all products
+      response = await axios.get(`${API_ORDER_URL}/products/`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    }
+
+    const cartCount = req.session.cart ? req.session.cart.length : 0;
+    console.log("Cart count:", cartCount);
+
+    // Render the products page with all or searched products
+    res.render("pages/orders/index", { 
+      products: response.data, 
+      cartCount, 
+      searchQuery  // Pass the search query, including price range, to the view
     });
 
-    res.render("pages/orders/index", { products: response.data });
   } catch (error) {
     console.error("Error fetching products:", error.message);
-    res.render("pages/orders/index", { products: [], error: error.message });
+    res.render("pages/orders/index", { products: [], cartCount: 0, error: error.message });
   }
 });
+
+
+
+
 
 // Product Details Page
 router.get("/product/:id", ensureAuthenticated, async (req, res) => {  // Ensure authentication here
@@ -52,29 +89,49 @@ router.get("/product/:id", ensureAuthenticated, async (req, res) => {  // Ensure
 });
 
 // Cart Page
-router.get("/cart", ensureAuthenticated, (req, res) => {  // Ensure authentication here
+router.get("/cart", ensureAuthenticated, (req, res) => {
   const cart = req.session.cart || [];
+  const cartCount = cart.length;  // Count of items in cart
   console.log("Rendering cart page with items:", cart);
-  res.render("pages/orders/cart", { cart });
+  res.render("pages/orders/cart", { cart, cartCount });
 });
 
+
+
 // Add to Cart
-router.post("/cart", ensureAuthenticated, (req, res) => {  // Ensure authentication here
+router.post("/cart", ensureAuthenticated, (req, res) => {
   const { productId, title, quantity, price } = req.body;
   const cart = req.session.cart || [];
-  cart.push({ productId, title, quantity, price });
-  req.session.cart = cart; // Store updated cart in the session
-  console.log("Added to cart:", { productId, title, quantity, price });
+  
+  // Check if the item is already in the cart
+  const existingItemIndex = cart.findIndex(item => item.productId === productId);
+  
+  if (existingItemIndex !== -1) {
+    // Update quantity if the item is already in the cart
+    cart[existingItemIndex].quantity += parseInt(quantity, 10); // Parse both quantities as integers
+  } else {
+    // Otherwise, add a new item
+    cart.push({ productId, title, quantity: parseInt(quantity, 10), price });
+  }
+
+  req.session.cart = cart; // Update the session cart
+  console.log("Updated cart:", cart);
   res.redirect("/order/");
 });
 
+
+
+
 // Remove from Cart
-router.post("/cart/remove", ensureAuthenticated, (req, res) => {  // Ensure authentication here
+router.post("/cart/remove", ensureAuthenticated, (req, res) => {
   const { productId } = req.body;
   const cart = req.session.cart || [];
-  const updatedCart = cart.filter((item) => item.productId !== productId);
+  
+  // Remove the item from the cart
+  const updatedCart = cart.filter(item => item.productId !== productId);
   req.session.cart = updatedCart; // Update cart in session
   console.log("Removed from cart:", productId);
+
   res.redirect("/order/cart");
 });
 
