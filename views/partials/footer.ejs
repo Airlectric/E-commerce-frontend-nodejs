@@ -1,36 +1,42 @@
-<!-- footer.ejs -->
-<footer class="text-center mt-5 py-4" style="background-color: #e9ecef;"> <!-- Slightly darker shade -->
+<footer id="footer" class="text-center mt-5 py-4" style="background-color: #001f3f;"> <!-- Navy Blue -->
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <h5>About Us</h5>
-        <p>Your trusted e-commerce platform for all your shopping needs!</p>
+        <h5 style="color: #FFD700;">Contact Us</h5> <!-- Gold -->
+        <p style="color: #ffffff;">Have questions? Reach out to our support team!</p> <!-- White -->
+        <p style="color: #ffffff;"><strong>Email:</strong> support@ecommerce.com</p>
+        <p style="color: #ffffff;"><strong>Phone:</strong> +233 55 238 4985</p>
       </div>
       <div class="col-md-4">
-        <h5>Quick Links</h5>
+        <h5 style="color: #FFD700;">Customer Service</h5> <!-- Gold -->
         <ul class="list-unstyled">
-          <li><a href="/about" class="text-dark">About Us</a></li>
-          <li><a href="/contact" class="text-dark">Contact Us</a></li>
-          <li><a href="/privacy" class="text-dark">Privacy Policy</a></li>
-          <li><a href="/terms" class="text-dark">Terms of Service</a></li>
+          <li><a href="/faq" style="color: #ffffff;">FAQ</a></li> <!-- White -->
+          <li><a href="/returns" style="color: #ffffff;">Returns & Exchanges</a></li> <!-- White -->
+          <li><a href="/shipping" style="color: #ffffff;">Shipping Information</a></li> <!-- White -->
         </ul>
       </div>
       <div class="col-md-4">
-        <h5>Follow Us</h5>
-        <a href="#" class="text-dark"><i class="fab fa-facebook-f"></i> Facebook</a><br>
-        <a href="#" class="text-dark"><i class="fab fa-twitter"></i> Twitter</a><br>
-        <a href="#" class="text-dark"><i class="fab fa-instagram"></i> Instagram</a><br>
+        <h5 style="color: #FFD700;">Follow Us</h5> <!-- Gold -->
+        <a href="#" style="color: #ffffff;"><i class="fab fa-facebook-f"></i> Facebook</a><br> <!-- White -->
+        <a href="#" style="color: #ffffff;"><i class="fab fa-twitter"></i> Twitter</a><br> <!-- White -->
+        <a href="#" style="color: #ffffff;"><i class="fab fa-instagram"></i> Instagram</a><br> <!-- White -->
       </div>
     </div>
-    <hr>
-    <p>&copy; 2024 E-Commerce Platform. All rights reserved.</p>
+    <hr style="border-color: #FFD700;"> <!-- Gold line -->
+    <p style="color: #FFD700;">&copy; 2024 Shopflex E-Commerce Platform. All rights reserved.</p> <!-- Gold -->
   </div>
 </footer>
 
-<!-- Bootstrap JS and Popper.js (for all pages) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <!-- Font Awesome for social media icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<script>
+  // Check for the presence of any iframe on the page
+  if (document.querySelector('iframe')) {
+    // If an iframe exists, remove the top padding
+    document.getElementById('footer').classList.remove('mt-5');
+  } else {
+    // If no iframe exists, ensure the top padding is applied
+    document.getElementById('footer').classList.add('mt-5');
+  }
+</script>

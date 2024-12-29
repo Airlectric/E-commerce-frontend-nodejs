@@ -1,61 +1,191 @@
 <%- include('../partials/header') %>
+
+<style>
+  body {
+    background-color: #f1f3f6;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid #001f3f; /* Navy Blue */
+  }
+
+  .card-header {
+    background-color: #001f3f; /* Navy Blue */
+    color: #ffd700; /* Gold */
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+  }
+
+  .card-body {
+    padding: 3rem;
+  }
+
+  .form-group label {
+    font-weight: bold;
+    color: #001f3f; /* Navy Blue */
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-control:focus {
+    border-color: #ffd700; /* Gold */
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  }
+
+  .btn-success {
+    background-color: #ffd700; /* Gold */
+    border-color: #ffd700;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+  }
+
+  .btn-success:hover {
+    background-color: #ffb700; /* Darker gold */
+    border-color: #ffb700;
+  }
+
+  .alert-danger, .alert-info {
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .alert-danger {
+    background-color: #ffcccc;
+    border-left: 5px solid #ff0000;
+  }
+
+  .alert-info {
+    background-color: #e7f4fe;
+    border-left: 5px solid #17a2b8;
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .form-row .form-group {
+    flex: 1;
+  }
+
+  .form-row .form-group label {
+    color: #001f3f;
+  }
+
+  .form-row .form-group input,
+  .form-row .form-group textarea {
+    width: 100%;
+  }
+
+  .profile-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .profile-image-container img {
+    border-radius: 10px;
+    max-width: 100px;
+    margin-bottom: 1rem;
+    border: 3px solid #ffd700; /* Gold border */
+  }
+</style>
+
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
+        <!-- Card Header -->
+        <div class="card-header">
+          <h3>Edit Your Profile</h3>
+        </div>
+
+        <!-- Card Body -->
         <div class="card-body">
-          <h3 class="card-title text-center">Edit Your Profile</h3>
-          <form action="/user/edit" method="POST">
-            <% if (error) { %>
-              <div class="alert alert-danger"><%= error %></div>
+          <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+
+          <form action="/user/edit" method="POST" enctype="multipart/form-data">
+            <!-- Profile Image Section -->
+            <div class="profile-image-container">
+              <label for="profileImage" class="text-center">Upload Profile Image</label>
+              <input type="file" name="profileImage" id="profileImage" class="form-control" />
+              <% if (user.profileImage) { %>
+                <p>Current Image: <img src="<%= user.profileImage %>" alt="Current Profile Image" /></p>
+              <% } %>
+            </div>
+
+            <!-- Form Fields Section -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="form-control" value="<%= user.name %>" required />
+              </div>
+              <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" name="age" id="age" class="form-control" value="<%= user.age %>" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" name="location" id="location" class="form-control" value="<%= user.location %>" required />
+              </div>
+            </div>
+
+            <% if (user.role === 'SHOP_OWNER') { %>
+              <!-- Shop Owner Specific Fields -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="shopName">Shop Name</label>
+                  <input type="text" name="shopName" id="shopName" class="form-control" value="<%= user.shopName %>" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="shopDescription">Shop Description</label>
+                  <textarea name="shopDescription" id="shopDescription" class="form-control"><%= user.shopDescription %></textarea>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="shopAddress">Shop Address</label>
+                  <input type="text" name="shopAddress" id="shopAddress" class="form-control" value="<%= user.shopAddress %>" />
+                </div>
+              </div>
+            <% } else if (user.role === 'USER') { %>
+              
+
             <% } %>
-            <div class="form-group">
-              <label for="profileImage">Profile Image URL</label>
-              <input
-                type="text"
-                name="profileImage"
-                id="profileImage"
-                class="form-control"
-                placeholder="Enter profile image URL"
-                value="<%= user.profileImage || '' %>"
-              />
-            </div>
-            <div class="form-group">
-              <label for="shopName">Shop Name</label>
-              <input
-                type="text"
-                name="shopName"
-                id="shopName"
-                class="form-control"
-                placeholder="Enter shop name"
-                value="<%= user.shopName || '' %>"
-              />
-            </div>
-            <div class="form-group">
-              <label for="shopDescription">Shop Description</label>
-              <textarea
-                name="shopDescription"
-                id="shopDescription"
-                class="form-control"
-                placeholder="Enter shop description"
-              ><%= user.shopDescription || '' %></textarea>
-            </div>
-            <div class="form-group">
-              <label for="shopAddress">Shop Address</label>
-              <input
-                type="text"
-                name="shopAddress"
-                id="shopAddress"
-                class="form-control"
-                placeholder="Enter shop address"
-                value="<%= user.shopAddress || '' %>"
-              />
-            </div>
-            <button type="submit" class="btn btn-success btn-block">Update Profile</button>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-success">Update Profile</button>
           </form>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <%- include('../partials/footer') %>

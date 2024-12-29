@@ -1,12 +1,13 @@
 <%- include("../../partials/header") %>
 <div class="container my-4">
-  <h1>Add Category</h1>
+  <h1 class="text-center mb-4 text-primary" style="font-family: 'Arial', sans-serif; font-weight: bold;">Add Category</h1>
+  
   <form action="/categories/add" method="POST">
     <div class="mb-3">
-      <label for="name" class="form-label">Category Name</label>
-      <input type="text" class="form-control" id="name" name="name" required />
+      <label for="name" class="form-label" style="font-weight: bold; color: #003366;">Category Name</label>
+      <input type="text" class="form-control" id="name" name="name" required style="border-color: #003366;" />
     </div>
-    <button type="submit" class="btn btn-success">Add Category</button>
+    <button type="submit" class="btn btn-warning" style="background-color: #003366; border-color: #FFD700; color: #FFD700; font-weight: bold;">Add Category</button>
   </form>
 </div>
 <%- include("../../partials/footer") %>

@@ -21,16 +21,16 @@ const ensureAuthenticated = (req, res, next) => {
 router.get("/", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
-    const { title, description, category, price } = req.query;  // Get search filters from query params
+    const { title, description, category, price } = req.query; // Get search filters from query params
 
     // Prepare search query including price range
     const searchQuery = {
-      title,
-      description,
-      category,
+      title: title || '', // Default to an empty string if undefined
+      description: description || '',
+      category: category || '',
       price: {
-        min: price?.min || 0,
-        max: price?.max || Number.MAX_VALUE
+        min: price?.min ? parseFloat(price.min) : 0,
+        max: price?.max ? parseFloat(price.max) : 10000,
       }
     };
 
@@ -42,7 +42,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       // If there are search filters, perform a search
       response = await axios.get(`${API_ORDER_URL}/products/search`, {
         headers: { Authorization: `Bearer ${accessToken}` },
-        params: searchQuery,  // Pass query params to search endpoint
+        params: searchQuery, // Pass query params to search endpoint
       });
     } else {
       // If no search filters, fetch all products
@@ -66,6 +66,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     res.render("pages/orders/index", { products: [], cartCount: 0, error: error.message });
   }
 });
+
 
 
 
@@ -161,24 +162,47 @@ router.post("/checkout", ensureAuthenticated, async (req, res) => {  // Ensure a
 });
 
 // Orders Page
-router.get("/orders", ensureAuthenticated, async (req, res) => {  // Ensure authentication here
+router.get("/orders", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
-    
+
     console.log("Fetching orders with access token:", accessToken);
 
+    // Fetch orders
     const response = await axios.get(`${API_ORDER_URL}/orders`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    console.log("Orders fetched successfully:", response.data);
-    res.render("pages/orders/orders", { orders: response.data });
+    const orders = response.data;
+
+    // Fetch product titles for each order
+    for (const order of orders) {
+      const productNames = [];
+
+      // Fetch details for each product in the order
+      for (const product of order.products) {
+        try {
+          const productResponse = await axios.get(`${API_ORDER_URL}/products/${product.productId}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+
+          productNames.push(productResponse.data.title);
+        } catch (productError) {
+          console.error(`Failed to fetch product ${product.productId}:`, productError.message);
+          productNames.push("Unknown Product"); // Handle missing product gracefully
+        }
+      }
+
+      // Add product names to the order
+      order.productNames = productNames;
+    }
+
+    res.render("pages/orders/orders", { orders });
   } catch (error) {
     console.error("Failed to fetch orders:", error.message);
     res.status(500).send("Failed to fetch orders");
   }
 });
-
 
 
 // Order Details Page

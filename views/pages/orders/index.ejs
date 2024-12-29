@@ -2,232 +2,334 @@
 <html lang="en">
 <head>
   <%- include("../../partials/header"); %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
   <style>
-    /* Cart icon styles */
-    .cart-icon {
-      position: fixed;
-      bottom: 20px; /* Positioning from the bottom */
-      right: 20px; /* Positioning from the right */
-      z-index: 1000; /* Ensure it stays on top of other elements */
-      font-size: 2rem; /* Font size for the icon */
-      background: #fff; /* White background for the icon */
-      border: 2px solid #007bff; /* Blue border */
-      border-radius: 50%; /* Circular shape */
-      width: 60px; /* Width of the icon */
-      height: 60px; /* Height of the icon */
-      display: flex; /* Flexbox for centering content */
-      align-items: center; /* Center vertically */
-      justify-content: center; /* Center horizontally */
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-      cursor: pointer; /* Pointer cursor on hover */
-      transition: background-color 0.3s, transform 0.3s; /* Smooth transitions for hover effects */
+
+    /* General page styling */
+    body {
+      background-color: white;
+
+      color: white;
+      /* White text for contrast */
+      font-family: 'Arial', sans-serif;
     }
 
-    .cart-icon:hover {
-      background-color: #e9ecef; /* Light gray background on hover */
-      transform: scale(1.05); /* Slightly enlarge on hover */
+    h1, h5, p {
+      color: #FFD700;
+      /* Gold color for headings and text */
     }
 
-    /* Notification badge styles */
-    .badge {
-      position: absolute; /* Position relative to the cart icon */
-      top: -5px; /* Adjust position above the icon */
-      right: -10px; /* Adjust position to the right of the icon */
-      background: red; /* Red background for the badge */
-      color: #fff; /* White text color */
-      font-size: 0.8rem; /* Font size for badge text */
-      border-radius: 50%; /* Circular shape for badge */
-      width: 20px; /* Fixed width for badge */
-      height: 20px; /* Fixed height for badge */
-      display: flex; /* Flexbox for centering content in badge */
-      align-items: center; /* Center vertically in badge */
-      justify-content: center; /* Center horizontally in badge */
-      font-weight: bold; /* Bold text for visibility */
-    }
-
+    /* Product card styling */
     .card {
+      background-color: #003366;
+      border: 1px solid #FFD700;
+      border-radius: 10px;
       transition: transform 0.3s, box-shadow 0.3s;
+      margin-bottom: 20px;
     }
 
     .card:hover {
-      transform: translateY(-5px); /* Lift effect on hover */
-      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+      transform: translateY(-5px);
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      background-color: #002147;
+    }
+
+    .card-img-top {
+      object-fit: cover;
+      max-height: 200px;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      color: #FFD700;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .card-text {
+      color: #FFD700;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background-color: #FFD700;
+      color: #002147;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #ffcc00;
     }
 
     .added-to-cart {
       position: absolute;
       top: 10px;
       left: 10px;
-      background-color: rgba(0, 128, 0, 0.8); /* Semi-transparent green background */
+      background-color: rgba(81, 45, 180, 0.733);
       color: white;
       padding: 5px;
       border-radius: 5px;
       font-size: 0.75rem;
-      display: none; /* Hide by default */
+      display: none;
     }
 
-    .add-to-cart-icon,
-    .remove-from-cart-icon {
-      font-size: 1rem; /* Reduced font size for buttons */
+    /* Cart icon styling */
+    .cart-icon {
+      position: fixed;
+      bottom: 60px;
+      right: 10px;
+      z-index: 1000;
+      font-size: 2rem;
+      background: #FFD700;
+      border: 2px solid #002147;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
     }
 
-    .btn {
-        font-size: smaller;
-        padding-top:.25rem;
-        padding-bottom:.25rem;
-        padding-left:.5rem;
-        padding-right:.5rem;
-     }
+    .cart-icon:hover {
+      background-color: #ffcc00;
+      transform: scale(1.05);
+    }
 
+    /* Cart notification badge */
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -10px;
+      background: red;
+      color: #fff;
+      font-size: 0.8rem;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    /* Footer styling */
+    footer {
+      background-color: #002147;
+      color: #FFD700;
+      padding: 20px;
+      text-align: center;
+    }
+	
     .search-form {
-      margin-bottom: 20px; /* Space between search form and products */
+      background-color: #003366; /* Navy Blue */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
     }
 
     .search-form input {
-      margin-right: 10px; /* Space between input fields */
-      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ffd700; /* Gold */
     }
 
     .search-form button {
-      padding: 0.5rem 1rem;
+      background-color: #ffd700; /* Gold */
+      color: #002147; /* Navy Blue */
+      border-radius: 5px;
     }
-  </style>
-</head>
-<body>
-<div class="container">
-    <h1 class="my-4">Products</h1>
+
+    .search-form button:hover {
+      background-color: #ffcc00; /* Lighter Gold */
+    }
+
+    .search-header {
+      text-align: center;
+      color: #ffd700; /* Gold */
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
     
-    <!-- Search Form -->
-	<form action="/order/" method="get" class="search-form">
-	  <input type="text" name="title" placeholder="Search by title" value="<%= searchQuery.title || '' %>" />
-	  <input type="text" name="description" placeholder="Search by description" value="<%= searchQuery.description || '' %>" />
-	  <input type="text" name="category" placeholder="Search by category" value="<%= searchQuery.category || '' %>" />
-	  
-	  <!-- Price Range Inputs -->
-	  <input type="number" name="price[min]" placeholder="Min price" value="<%= searchQuery.price?.min || '' %>" />
-	  <input type="number" name="price[max]" placeholder="Max price" value="<%= searchQuery.price?.max || '' %>" />
-	  
-	  <button type="submit">Search</button>
-	</form>
+   </style>
+</head>
+
+<body>
+   <div class="container">
+     <h1 class="search-header">Products</h1>
+
+     <!-- Search Form -->
+     <form action="/order/" method="get" class="search-form">
+       <div class="row g-3">
+         <div class="col-md-3">
+           <input type="text" name="title" class="form-control" placeholder="Search by title" value="<%= searchQuery.title || '' %>" />
+         </div>
+         <div class="col-md-3">
+           <input type="text" name="description" class="form-control" placeholder="Search by description" value="<%= searchQuery.description || '' %>" />
+         </div>
+         <div class="col-md-3">
+           <input type="text" name="category" class="form-control" placeholder="Search by category" value="<%= searchQuery.category || '' %>" />
+         </div>
+         <div class="col-md-2">
+           <input type="number" name="price[min]" class="form-control" placeholder="Min price" value="<%= searchQuery.price?.min || '' %>" />
+         </div>
+         <div class="col-md-2">
+           <input type="number" name="price[max]" class="form-control" placeholder="Max price" value="<%= searchQuery.price?.max || '' %>" />
+         </div>
+         <div class="col-md-2">
+           <button type="submit" class="btn btn-primary w-100">Search</button>
+         </div>
+       </div>
+     </form>
 
     <!-- Product Listings -->
     <div class="row">
-        <% products.forEach((product) => { %>
+      <% products.forEach((product)=> { %>
         <div class="col-md-4">
-            <div class="card mb-4 shadow-sm position-relative">
-                <!-- Wrap the card image and title with a clickable link to the product details page -->
-                <a href="/order/product/<%= product._id %>">
-                    <% const baseUrl = process.env.API_ORDERS_IMAGE_URL || 'http://localhost:6000'; %> 
-                    <% if (product.image) { %>
-                    <% if (product.image.startsWith('/uploads/')) { %>
-                    <!-- Render local upload image with the full URL from environment variable -->
-                    <img src="<%= baseUrl %>/images<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
-                    <% } else { %>
-                    <!-- Render external image directly -->
-                    <img src="<%= product.image %>" class="card-img-top" alt="<%= product.title %>" style="max-height: 200px; object-fit: cover;" />
-                    <% } %>
-                    <% } else { %>
-                    <!-- Render placeholder image if no image is provided -->
-                    <img src="/images/placeholder.png" class="card-img-top" alt="No Image Available" style="max-height: 200px; object-fit: cover;" />
-                    <% } %>
-                </a>
-                <div class="card-body">
-                    <!-- Product title wrapped in a clickable link -->
-                    <a href="/order/product/<%= product._id %>" class="card-title">
-                        <h5><%= product.title %></h5>
-                    </a>
-                    <p class="card-text">$<%= product.price %></p>
-                    <!-- The form for adding to cart -->
-                    <form action="/order/cart" method="post" class="add-to-cart-form">
-                        <input type="hidden" name="productId" value="<%= product._id %>">
-                        <input type="hidden" name="title" value="<%= product.title %>">
-                        <input type="hidden" name="price" value="<%= product.price %>">
-                        <div class="form-group">
-                            <label>Quantity:</label>
-                            <input type="number" name="quantity" value="1" class="form-control" min="1">
-                        </div>
-                        <button type="submit" class="add-to-cart-icon btn btn-primary btn-block mt-3">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
-                        </button>
-                    </form>
-                    <!-- Remove from Cart Button -->
-                    <form action="/order/cart/remove" method="post" class="remove-from-cart-form">
-                        <input type="hidden" name="productId" value="<%= product._id %>">
-                        <button type="submit" class="remove-from-cart-icon btn btn-danger btn-block mt-2">
-                            <i class="fas fa-trash-alt"></i> Remove from Cart
-                        </button>
-                    </form>
+          <div class="card mb-4 shadow-sm position-relative">
+            <!-- Wrap the card image and title with a clickable link to the product details page -->
+            <a href="/order/product/<%= product._id %>">
+              <% const baseUrl=process.env.API_ORDERS_IMAGE_URL || 'http://localhost:6000' ; %>
+              <% if (product.image) { %>
+                <% if (product.image.startsWith('/uploads/')) { %>
+                  <!-- Render local upload image with the full URL from environment variable -->
+                  <img src="<%= baseUrl %>/images<%= product.image %>" class="card-img-top" alt="<%= product.title %>"
+                    style="max-height: 200px; object-fit: cover;" />
+                <% } else { %>
+                  <!-- Render external image directly -->
+                  <img src="<%= product.image %>" class="card-img-top" alt="<%= product.title %>"
+                    style="max-height: 200px; object-fit: cover;" />
+                <% } %>
+              <% } else { %>
+                <!-- Render placeholder image if no image is provided -->
+                <img src="/images/placeholder.png" class="card-img-top" alt="No Image Available"
+                  style="max-height: 200px; object-fit: cover;" />
+              <% } %>
+            </a>
+            <div class="card-body">
+              <!-- Product title wrapped in a clickable link -->
+              <a href="/order/product/<%= product._id %>" class="card-title">
+                <h5>
+                  <%= product.title %>
+                </h5>
+              </a>
+              <p class="card-text">$<%= product.price %></p>
+
+              <!-- Add to Cart Form -->
+              <form action="/order/cart" method="post" class="add-to-cart-form">
+                <input type="hidden" name="productId" value="<%= product._id %>">
+                <input type="hidden" name="title" value="<%= product.title %>">
+                <input type="hidden" name="price" value="<%= product.price %>">
+                <div class="form-group">
+                  <label>Quantity:</label>
+                  <input type="number" name="quantity" value="1" class="form-control" min="1">
                 </div>
+                <button type="submit" class="add-to-cart-icon btn btn-primary btn-block mt-3">
+                  <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+              </form>
 
-                <!-- Indicator showing item has been added to cart -->
-                <div class="added-to-cart">Added!</div>
-
+              <!-- Remove from Cart Button -->
+              <form action="/order/cart/remove" method="post" class="remove-from-cart-form">
+                <input type="hidden" name="productId" value="<%= product._id %>">
+                <button type="submit" class="remove-from-cart-icon btn btn-danger btn-block mt-2">
+                  <i class="fas fa-trash-alt"></i> Remove from Cart
+                </button>
+              </form>
             </div>
+
+            <!-- Indicator showing item has been added to cart -->
+            <div class="added-to-cart">Item added to cart!</div>
+
+          </div>
         </div>
-        <% }); %>
+      <% }); %>
     </div>
 
     <!-- Cart Icon with Notification Badge -->
     <div id="cartIconContainer">
-        <a href="/order/cart" class="cart-icon">
-            <i class="fas fa-shopping-cart"></i>
-            <span id="cartCount" class="badge"><%= cartCount %></span> <!-- Notification Badge -->
-        </a>
+      <a href="/order/cart" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cartCount" class="badge">
+          <%= cartCount %>
+        </span>
+      </a>
     </div>
+  </div>
 
-</div>
+  <%- include("../../partials/footer"); %>
 
-<%- include("../../partials/footer"); %>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+  <script>
+    // Detect if the page is loaded in an iframe and hide both the navbar and footer if true
+    if (window.self !== window.top) {
+        document.addEventListener("DOMContentLoaded", () => {
+          // Hide navbar and footer if in iframe
+          document.querySelector('.navbar').style.display = 'none'; // Hide navbar
+          document.querySelector('footer').style.display = 'none'; // Hide footer
+        });
+      }
+	  
+      // Initialize cart count from backend
+      let cartCount = parseInt(document.getElementById('cartCount').innerText) || 0;
 
-<script>
-// Initialize cart count from backend
-let cartCount = parseInt(document.getElementById('cartCount').innerText) || 0;
+      // Function to update cart count in both navbar and cart icon
+      function updateCartCount(newCount) {
+        cartCount = newCount;
+        document.getElementById('cartCount').innerText = cartCount;
+        document.getElementById('cartCountHeader').innerText = cartCount;
+      }
 
-// Add event listener to each add-to-cart form submission
-$('.add-to-cart-form').on('submit', function(event) {
-  event.preventDefault(); // Prevent default form submission
+      // Add event listener to each add-to-cart form submission
+      $('.add-to-cart-form').on('submit', function (event) {
+        event.preventDefault(); // Prevent default form submission
 
-  const form = $(this); // Get form element
+        const form = $(this); // Get form element
 
-  $.post(form.attr('action'), form.serialize(), function(data) {
-    // Assuming backend returns updated cart count
-    cartCount++;
-    document.getElementById('cartCount').innerText = cartCount;
-    alert('Product added to cart!'); // Optional feedback
+        $.post(form.attr('action'), form.serialize(), function (data) {
+          // Assuming backend returns updated cart count
+          updateCartCount(cartCount + 1);
+          alert('Product added to cart!'); // Optional feedback
 
-    // Show indicator that item has been added
-    form.closest('.card').find('.added-to-cart').show(); // Show added indicator
+          // Show indicator that item has been added
+          form.closest('.card').find('.added-to-cart').show(); // Show added indicator
 
-    // Add animation to cart icon
-    const cartIcon = document.querySelector('.cart-icon');
-    cartIcon.classList.add('animate');
-    setTimeout(() => {
-      cartIcon.classList.remove('animate');
-    }, 500);
-  });
-});
+          // Add animation to cart icon
+          const cartIcon = document.querySelector('.cart-icon');
+          cartIcon.classList.add('animate');
+          setTimeout(() => {
+            cartIcon.classList.remove('animate');
+          }, 500);
+        });
+      });
 
-// Add event listener to each remove-from-cart form submission
-$('.remove-from-cart-form').on('submit', function(event) {
-  event.preventDefault(); // Prevent default form submission
+      // Add event listener to each remove-from-cart form submission
+      $('.remove-from-cart-form').on('submit', function (event) {
+        event.preventDefault(); // Prevent default form submission
 
-  const form = $(this); // Get form element
+        const form = $(this); // Get form element
 
-  $.post(form.attr('action'), form.serialize(), function(data) {
-    // Assuming backend returns updated cart count
-    if (cartCount > 0) {
-      cartCount--;
-      document.getElementById('cartCount').innerText = cartCount;
-      alert('Product removed from cart!'); // Optional feedback
-    }
+        $.post(form.attr('action'), form.serialize(), function (data) {
+          // Assuming backend returns updated cart count
+          if (cartCount > 0) {
+            updateCartCount(cartCount - 1);
+            alert('Product removed from cart!'); // Optional feedback
+          }
 
-    // Hide added indicator when item is removed
-    form.closest('.card').find('.added-to-cart').hide(); // Hide added indicator
-  });
-});
-</script>
+          // Hide added indicator when item is removed
+          form.closest('.card').find('.added-to-cart').hide(); // Hide added indicator
+        });
+      });
+  </script>
 
 </body>
+
 </html>

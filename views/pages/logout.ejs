@@ -1,18 +1,33 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h3 class="card-title text-center"><%= message %></h3>
-          <div class="text-center mt-3">
-            <!-- Use a form for the logout action -->
-            <form id="logoutForm" action="/user/logout" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
-            </form>
-            <a href="/" class="btn btn-secondary ml-2">Cancel</a>
-          </div>
+<div class="row justify-content-center" style="background-color: white; padding: 50px 0;">
+  <div class="col-md-6">
+    <div class="card" style="border-radius: 15px; border: 1px solid #001f3d; background-color: #f8f9fa;">
+      <div class="card-body">
+        <h3 class="card-title text-center" style="color: #FFD700;">
+          <%= message %>
+        </h3>
+        
+        <!-- Conditional logout message based on the user's role -->
+        <% if (user.role === 'SHOP_OWNER') { %>
+          <p class="text-center" style="color: #001f3d;">
+            Are you sure you want to log out of your Shopflex account as the Shop Owner? Logging out will end your session, and you will no longer have access to manage your shop or process orders. If you have unsaved changes or pending orders, please save them before logging out.
+          </p>
+        <% } else if (user.role === 'USER') { %>
+          <p class="text-center" style="color: #001f3d;">
+            Are you sure you want to log out of your Shopflex account? Logging out will end your shopping session. If you have items in your cart or pending orders, make sure to complete them before leaving. We hope to see you again soon!
+          </p>
+        <% } %>
+
+        <!-- Buttons for Logout and Cancel -->
+        <div class="text-center mt-3">
+          <!-- Logout form -->
+          <form id="logoutForm" action="/user/logout" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-danger" id="confirmLogoutBtn" style="background-color: #FFD700; color: #001f3d; font-weight: bold;">Logout</button>
+          </form>
+          
+          <!-- Cancel button -->
+          <a href="/" class="btn btn-secondary ml-2" style="background-color: #001f3d; color: #FFD700; border: none; font-weight: bold;">Cancel</a>
         </div>
       </div>
     </div>

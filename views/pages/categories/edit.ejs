@@ -1,9 +1,10 @@
 <%- include("../../partials/header") %>
 <div class="container my-4">
-  <h1>Edit Category</h1>
+  <h1 class="text-center mb-4 text-primary" style="font-family: 'Arial', sans-serif; font-weight: bold;">Edit Category</h1>
+  
   <form action="/categories/<%= category.id %>/edit" method="POST">
     <div class="mb-3">
-      <label for="name" class="form-label">Category Name</label>
+      <label for="name" class="form-label" style="font-weight: bold; color: #003366;">Category Name</label>
       <input
         type="text"
         class="form-control"
@@ -11,10 +12,10 @@
         name="name"
         value="<%= category.name %>"
         required
+        style="border-color: #003366;"
       />
     </div>
-    <button type="submit" class="btn btn-warning">Update Category</button>
+    <button type="submit" class="btn btn-warning" style="background-color: #003366; border-color: #FFD700; color: #FFD700; font-weight: bold;">Update Category</button>
   </form>
 </div>
 <%- include("../../partials/footer") %>
-

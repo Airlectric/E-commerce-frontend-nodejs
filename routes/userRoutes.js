@@ -1,17 +1,29 @@
-const express = require('express');
-const axios = require('axios');
+const express = require("express");
+const axios = require("axios");
+const FormData = require("form-data");
 const router = express.Router();
+const multer = require('multer');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const API_AUTH_URL = process.env.API_AUTH_URL;
 
 // Register Handler
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-    await axios.post(`${API_AUTH_URL}/register`, { username, email, password, role });
-    res.redirect('/login');
+    await axios.post(`${API_AUTH_URL}/register`, {
+      username,
+      email,
+      password,
+      role,
+    });
+    res.redirect("/login");
   } catch (error) {
-    res.render('pages/register', { error: error.response?.data?.message || 'Registration failed.' });
+    res.render("pages/register", {
+      error: error.response?.data?.message || "Registration failed.",
+    });
   }
 });
 
@@ -22,7 +34,10 @@ router.post("/login", async (req, res) => {
     console.log("Received login request:", { username, password });
 
     // Send a login request to the authentication service
-    const response = await axios.post(`${API_AUTH_URL}/login`, { username, password });
+    const response = await axios.post(`${API_AUTH_URL}/login`, {
+      username,
+      password,
+    });
 
     console.log("Authentication service response:", response.data);
 
@@ -37,38 +52,78 @@ router.post("/login", async (req, res) => {
     console.log("Tokens and user details stored successfully in session.");
 
     // Redirect to the profile page
-    res.redirect("/profile");
+    res.redirect("/home");
   } catch (error) {
     console.error("Login Error:", error.response?.data || error.message);
-    const errorMessage = error.response?.data?.error || "Login failed. Please try again.";
+    const errorMessage =
+      error.response?.data?.error || "Login failed. Please try again.";
     res.render("pages/login", { error: errorMessage });
   }
 });
 
 
-
-
-// Edit Profile
-router.post('/edit', async (req, res) => {
+// Edit Profile Handler
+router.post('/edit', upload.single('profileImage'), async (req, res) => {
   try {
-    if (!req.session.user) return res.redirect('/login');
-    
-    const { profileImage, shopName, shopDescription, shopAddress } = req.body;
-    const accessToken = req.session.user.accessToken;
-    
-    const response = await axios.put(
-      `${API_AUTH_URL}/profile/edit`,
-      { profileImage, shopName, shopDescription, shopAddress },
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    
-    req.session.user = { ...req.session.user, ...response.data.user };
+    const { accessToken } = req.session;
+
+    // Debugging: Log the access token and user session
+    console.log("Access Token:", accessToken);
+    console.log("User Session Data:", req.session.user);
+
+    // The profileImage file will now be attached to `req.file`
+    const formData = new FormData();
+
+    // Debugging: Log request body
+    console.log("Request Body:", req.body);
+
+    for (const key in req.body) {
+      formData.append(key, req.body[key]);
+    }
+
+    // Pass the file data from req.file if provided
+    if (req.file) {
+      console.log("File details:", req.file); // Log file details
+      formData.append('profileImage', req.file.buffer, req.file.originalname); 
+    } else {
+      console.log("No file uploaded.");
+    }
+
+    // Debugging: Log FormData contents
+    console.log("Form Data Contents:", formData);
+
+    // Continue with the Axios request
+    const response = await axios.put(`${API_AUTH_URL}/profile/edit`, formData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...formData.getHeaders(),
+      },
+    });
+
+    // Debugging: Log response from the server
+    console.log("Response from API:", response.data);
+
+    // Update session with new user data
+    req.session.user = { ...req.session.user, ...response.data.user }; 
     res.redirect('/profile');
   } catch (error) {
-    console.error("Profile Edit Error:", error.response?.data || error.message);
-    res.status(500).send('Error editing profile');
+    // Debugging: Log error details
+    console.error('Error editing profile:', error.message || error.response?.data);
+    
+    if (error.response) {
+      console.error("Error Response Data:", error.response.data);
+      console.error("Error Response Status:", error.response.status);
+      console.error("Error Response Headers:", error.response.headers);
+    }
+
+    res.render('pages/editProfile', {
+      user: req.session.user,
+      error: 'Failed to update profile. Please try again.',
+    });
   }
 });
+
+
 
 // Logout Handler
 router.post("/logout", async (req, res) => {
@@ -85,7 +140,9 @@ router.post("/logout", async (req, res) => {
     console.log("Logging out user:", user.id);
 
     // Step 1: Send request to revoke the refresh token
-    const { data } = await axios.post(`${process.env.API_AUTH_URL}/logout`, { userId: user.id });
+    const { data } = await axios.post(`${process.env.API_AUTH_URL}/logout`, {
+      userId: user.id,
+    });
 
     if (data.error) {
       console.error("Failed to revoke refresh token:", data.error);
@@ -98,7 +155,9 @@ router.post("/logout", async (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error("Error destroying session:", err);
-        return res.status(500).json({ error: "Failed to log out. Please try again." });
+        return res
+          .status(500)
+          .json({ error: "Failed to log out. Please try again." });
       }
 
       console.log("Session destroyed successfully.");
@@ -112,7 +171,5 @@ router.post("/logout", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 module.exports = router;

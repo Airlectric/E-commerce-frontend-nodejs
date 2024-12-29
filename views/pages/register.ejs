@@ -2,15 +2,15 @@
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
+      <div class="card border-0 shadow" style="border-radius: 10px;">
+        <div class="card-body" style="background-color: #002147; color: #FFD700;">
           <h3 class="card-title text-center">Create an Account</h3>
           <form action="/user/register" method="POST">
             <% if (error) { %>
               <div class="alert alert-danger"><%= error %></div>
             <% } %>
-            <div class="form-group">
-              <label for="username">Username</label>
+            <div class="mb-3"> <!-- Changed form-group to mb-3 -->
+              <label for="username" class="form-label">Username</label> <!-- Added form-label class -->
               <input
                 type="text"
                 name="username"
@@ -20,8 +20,8 @@
                 required
               />
             </div>
-            <div class="form-group">
-              <label for="email">Email</label>
+            <div class="mb-3"> <!-- Changed form-group to mb-3 -->
+              <label for="email" class="form-label">Email</label> <!-- Added form-label class -->
               <input
                 type="email"
                 name="email"
@@ -31,8 +31,8 @@
                 required
               />
             </div>
-            <div class="form-group">
-              <label for="password">Password</label>
+            <div class="mb-3"> <!-- Changed form-group to mb-3 -->
+              <label for="password" class="form-label">Password</label> <!-- Added form-label class -->
               <input
                 type="password"
                 name="password"
@@ -42,18 +42,18 @@
                 required
               />
             </div>
-            <div class="form-group">
-              <label for="role">Role</label>
-              <select name="role" id="role" class="form-control">
+            <div class="mb-3"> <!-- Changed form-group to mb-3 -->
+              <label for="role" class="form-label">Role</label> <!-- Added form-label class -->
+              <select name="role" id="role" class="form-select"> <!-- Changed form-control to form-select for select elements -->
                 <option value="USER">User</option>
                 <option value="SHOP_OWNER">Shop Owner</option>
                 <option value="ADMIN">Admin</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <button type="submit" class="btn btn-warning w-100">Register</button> <!-- Changed btn-block to w-100 -->
           </form>
-          <div class="text-center mt-3">
-            <p>Already have an account? <a href="/login">Login here</a></p>
+          <div class="text-center mt-3" style="color: #FFD700;">
+            <p>Already have an account? <a href="/login" style="color: #FFD700;">Login here</a></p>
           </div>
         </div>
       </div>
@@ -64,9 +64,9 @@
 <%- include('../partials/footer') %>
 
 <!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-3.5.1.slim.min.js"></script> <!-- Ensure jQuery is loaded -->
+<script src="//cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> <!-- Popper.js for tooltips -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script> <!-- Updated Bootstrap JS -->
 
 <style>
   body {
@@ -82,4 +82,3 @@
     font-size: small;
   }
 </style>
-

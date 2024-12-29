@@ -1,0 +1,88 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar for Profile and Navigation Links -->
+    <nav 
+      id="sidebar" 
+      class="col-md-3 col-lg-2 d-md-block sidebar collapse show"
+      style="
+        background: navy; 
+        color: gold; 
+        border-right: 2px solid gold;
+        min-height: 100vh;
+        position: sticky; 
+        top: 0;
+      ">
+      <div class="position-sticky">
+        <!-- Profile Section -->
+        <div class="text-center p-3 border-bottom" style="border-color: gold;">
+          <img
+            id="profileImage"
+            src="<%= user.profileImage || 'https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg' %>"
+            alt="User Image"
+            class="img-fluid rounded-circle mb-3 border border-secondary"
+            style="width: 100px; height: 100px; object-fit: cover; border-color: gold;"
+          >
+          <h5 class="text-white"><%= user.username %></h5>
+          <p style="font-size: 0.9rem; color: #FFD700;"><%= user.email %></p> 
+          <p>
+            Role: 
+            <span class="badge" style="background-color: gold; color: navy;">
+              <%= user.role %>
+            </span>
+          </p>
+          <a href="/edit" class="btn btn-warning btn-sm" style="padding: 5px 15px;">Edit Profile</a>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="mt-4 px-3">
+          <ul class="nav flex-column">
+            <% if (user.role === 'SHOP_OWNER') { %>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/products/add" style="color: gold;">Add Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/products" style="color: gold;">View Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/categories/" style="color: gold;">Categories</a>
+              </li>
+            <% } else if (user.role === 'USER') { %>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/order" style="color: gold;">Browse Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/order/orders" style="color: gold;">My Orders</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/order/cart" style="color: gold;">My Cart</a>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="padding-top: 20px;">
+      <div class="content">
+        <% if (user.role === 'SHOP_OWNER') { %>
+          <!-- Shop Owner - Add Product Page -->
+          <iframe 
+            src="/products/add" 
+            style="width: 100%; height: calc(100vh - 20px); border: none;">
+          </iframe>
+        <% } else if (user.role === 'USER') { %>
+          <!-- User - View Products Page -->
+          <iframe 
+            src="/order" 
+            style="width: 100%; height: calc(100vh - 20px); border: none;">
+          </iframe>
+        <% } %>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

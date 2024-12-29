@@ -1,82 +1,181 @@
 <%- include('../partials/header') %>
 <div class="container-fluid p-0">
   <!-- Hero Section -->
-  <header class="hero text-white text-center" style="background-image: url('https://lh3.googleusercontent.com/uZyFmxsV_Qwc2k-CNE4-5Ts-uJ0sT3jWkyIDNHRAfpIKcSi_n-gLusHC2gDR46TCjaPorMl3j8gzQ4MStPOFSM9P1JQlih5vamA=w904-h509-rw'); background-size: cover; background-position: center; height: 70vh; position: relative;">
-    <div class="overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5);"></div>
-    <div class="container d-flex align-items-center justify-content-center" style="height: 100%; position: relative; z-index: 1;">
-      <div>
-        <h1 class="display-4 font-weight-bold">Welcome to Our E-Commerce Platform</h1>
-        <p class="lead">Discover products, manage shops, and connect with customers all in one place.</p>
-        <a class="btn btn-light btn-lg" href="/register" role="button">Get Started</a>
+  <header class="hero d-flex flex-column flex-md-row align-items-center" style="height: 70vh; position: relative;">
+    <!-- Larger Screen Version -->
+    <div class="col-md-6 p-0 hero-image d-none d-md-block" style="background-image: url('/hero.jpg'); background-size: cover; background-position: center; transform: skewX(-10deg); height: 100%;"></div>
+    <div class="col-md-6 bg-light p-5 text-center d-flex flex-column justify-content-center d-none d-md-flex" style="transform: skewX(10deg);">
+      <h1 class="display-4 font-weight-bold text-dark">Welcome to Shopflex</h1>
+      <p class="lead text-dark">Your one-stop platform for buying and selling. Explore a variety of products and services tailored for you!</p>
+      <a class="btn btn-warning btn-lg mt-3" href="/register" role="button">Join Shopflex Now!</a>
+    </div>
+    <!-- Smaller Screen Version -->
+    <div class="hero-overlay d-md-none" style="background-image: url('/hero.jpg');">
+      <div class="dark-overlay"></div>
+      <div class="text-center text-white px-3 hero-content">
+        <h1 class="display-4 font-weight-bold">Welcome to Shopflex</h1>
+        <p class="lead">Your one-stop platform for buying and selling. Explore a variety of products and services tailored for you!</p>
+        <a class="btn btn-warning btn-lg mt-3" href="/register" role="button">Join Shopflex Now!</a>
       </div>
     </div>
   </header>
 
-  <!-- Features Section -->
-  <section class="py-5 bg-light text-center">
+  <!-- How It Works Section -->
+  <section class="py-5 bg-white text-center">
     <div class="container">
-      <h2 class="display-4 mb-4">Why Choose Us?</h2>
+      <h2 class="display-4 mb-4">How It Works</h2>
+      <p class="lead mb-5">Shopflex makes it easy for buyers and sellers to connect. Here's how it works:</p>
       <div class="row">
         <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
+          <img src="https://img.freepik.com/premium-vector/account-login-line-icon-new-user-register_1948-2989.jpg?w=360" class="img-fluid mb-3" alt="Step 1">
+          <h5>Step 1: Create an Account</h5>
+          <p>Sign up for a free account to start your buying or selling journey.</p>
+        </div>
+        <div class="col-md-4">
+          <img src="https://img.freepik.com/vecteurs-premium/boutique-ligne-achetez-economisez-notre-plateforme-securisee_123891-156235.jpg?w=360" class="img-fluid mb-3" alt="Step 2">
+          <h5>Step 2: Browse or List Products</h5>
+          <p>Buyers can explore products, while sellers can list items for sale in just a few clicks.</p>
+        </div>
+        <div class="col-md-4">
+          <img src="https://img.freepik.com/premium-vector/secure-transaction_9206-890.jpg" class="img-fluid mb-3" alt="Step 3">
+          <h5>Step 3: Secure Transactions</h5>
+          <p>Enjoy secure and seamless transactions. Your satisfaction is our priority.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-5 bg-navy text-center">
+    <div class="container">
+      <h2 class="display-4 mb-4 text-gold">Why Choose Shopflex?</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-6 shadow-sm border-gold">
             <div class="card-body">
-              <h5 class="card-title">For Buyers</h5>
-              <p class="card-text">Browse a wide range of products from various sellers. Enjoy competitive prices and secure transactions.</p>
-              <a href="/shop" class="btn btn-primary">Shop Now</a>
+              <h5 class="card-title text-navyBlue">For Buyers</h5>
+              <p class="card-text">Discover a vast selection of products at competitive prices. Enjoy secure transactions with every purchase.</p>
+              <a href="/shop" class="btn btn-gold">Explore Products</a>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
+        <div class="col-md-6">
+          <div class="card mb-6 shadow-sm border-gold">
             <div class="card-body">
-              <h5 class="card-title">For Sellers</h5>
-              <p class="card-text">Set up your shop quickly and easily. Reach a larger audience and grow your business with us.</p>
-              <a href="/register" class="btn btn-primary">Start Selling</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">Customer Support</h5>
-              <p class="card-text">Our dedicated support team is here to help you with any questions or issues you may have.</p>
-              <a href="/support" class="btn btn-primary">Contact Us</a>
+              <h5 class="card-title text-navyBlue">For Sellers</h5>
+              <p class="card-text">Launch your shop effortlessly and reach thousands of potential customers. Grow your business with us!</p>
+              <a href="/register" class="btn btn-gold">Start Selling</a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Testimonials Section -->
-  <section class="py-5 text-center">
-    <div class="container">
-      <h2 class="display-4 mb-4">What Our Users Say</h2>
-      <blockquote class="blockquote">
-        <p>"This platform has transformed my shopping experience! I can find everything I need in one place."</p>
-        <footer class="blockquote-footer">Jane Doe, Happy Buyer</footer>
-      </blockquote>
-      <blockquote class="blockquote">
-        <p>"As a seller, I love how easy it is to manage my shop. The support team is fantastic!"</p>
-        <footer class="blockquote-footer">John Smith, Shop Owner</footer>
-      </blockquote>
-    </div>
-  </section>
-
-  <!-- Call to Action Section -->
-  <section class="py-5 bg-secondary text-white text-center">
-    <div class="container">
-      <h2>Join Us Today!</h2>
-      <p>Whether you're looking to buy or sell, our platform has everything you need.</p>
-      <a href="/register" class="btn btn-light btn-lg">Get Started Now!</a>
-    </div>
-  </section>
-
 </div>
 
 <%- include('../partials/footer') %>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<style>
+  /* Hero Section Styles */
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
 
+  .hero-image {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero-overlay {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    display: none;
+    position: relative;
+  }
+
+  .dark-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2; /* Above the dark overlay */
+    padding: 1rem;
+  }
+
+  .hero-overlay h1 {
+    font-size: 2.5rem; /* Responsive font size */
+  }
+
+  .hero-overlay p {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-image {
+      display: none; /* Hide the split layout */
+    }
+
+    .hero-overlay {
+      display: flex; /* Show overlay only on small screens */
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  /* General Styles */
+  .bg-navy {
+    background-color: #001f3f;
+  }
+
+  .text-gold {
+    color: #FFD700;
+  }
+
+  .text-navyBlue {
+    color: #001f3f;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .text-navyBlue:hover {
+    text-decoration: underline;
+  }
+
+  .border-gold {
+    border: 1px solid #FFD700;
+  }
+
+  .btn-gold {
+    background-color: #FFD700;
+    color: #001f3f;
+    border: none;
+  }
+
+  .btn-gold:hover {
+    background-color: #ffcc00;
+    color: #fff;
+  }
+
+  .card-text {
+    color: #001f3f !important;
+  }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -1,10 +1,11 @@
 <%- include("../../partials/header") %>
 <div class="container my-4">
-  <h1>Edit Product</h1>
+  <h1 class="text-center mb-4 text-primary" style="font-family: 'Arial', sans-serif; font-weight: bold;">Edit Product</h1>
+  
   <form action="/products/<%= product._id %>/edit" method="POST" enctype="multipart/form-data">
     <!-- Product Title -->
     <div class="mb-3">
-      <label for="title" class="form-label">Product Title</label>
+      <label for="title" class="form-label text-warning">Product Title</label>
       <input
         type="text"
         class="form-control"
@@ -12,25 +13,27 @@
         name="title"
         value="<%= product.title %>"
         required
+        style="border: 2px solid #003366;"
       />
     </div>
 
     <!-- Description -->
     <div class="mb-3">
-      <label for="description" class="form-label">Description</label>
+      <label for="description" class="form-label text-warning">Description</label>
       <textarea
         class="form-control"
         id="description"
         name="description"
         rows="4"
         required
+        style="border: 2px solid #003366;"
       ><%= product.description %></textarea>
     </div>
 
     <!-- Category -->
     <div class="mb-3">
-      <label for="category" class="form-label">Category</label>
-      <select class="form-select" id="category" name="category_id" required>
+      <label for="category" class="form-label text-warning">Category</label>
+      <select class="form-select" id="category" name="category_id" required style="border: 2px solid #003366;">
         <% categories.forEach(category => { %>
           <option value="<%= category._id %>" <%= product.category_id.toString() === category._id.toString() ? "selected" : "" %>>
             <%= category.name %>
@@ -41,7 +44,7 @@
 
     <!-- Price -->
     <div class="mb-3">
-      <label for="price" class="form-label">Price</label>
+      <label for="price" class="form-label text-warning">Price</label>
       <input
         type="number"
         step="0.01"
@@ -50,12 +53,13 @@
         name="price"
         value="<%= product.price %>"
         required
+        style="border: 2px solid #003366;"
       />
     </div>
 
     <!-- Quantity -->
     <div class="mb-3">
-      <label for="quantity" class="form-label">Quantity</label>
+      <label for="quantity" class="form-label text-warning">Quantity</label>
       <input
         type="number"
         class="form-control"
@@ -63,21 +67,23 @@
         name="quantity"
         value="<%= product.quantity %>"
         required
+        style="border: 2px solid #003366;"
       />
     </div>
 
     <!-- Image Upload Section -->
     <div class="mb-3">
-      <label for="image" class="form-label">Image</label>
+      <label for="image" class="form-label text-warning">Image</label>
       <p class="text-muted">Current Image: <%= product.image ? product.image : "None" %></p>
       <img src="<%= product.image %>" alt="Current Image" class="img-thumbnail mb-3" style="max-width: 200px;" />
-      <p class="text-muted">You can either upload a new image file or provide a new image URL.</p>
+      <p class="text-muted" style="font-size: 14px;">You can either upload a new image file or provide a new image URL.</p>
       <input
         type="file"
         class="form-control mb-2"
         id="image"
         name="imageFile"
         accept="image/*"
+        style="border: 2px solid #003366;"
       />
       <input
         type="text"
@@ -86,11 +92,13 @@
         name="image"
         placeholder="Or provide an image URL"
         value="<%= product.image %>"
+        style="border: 2px solid #003366;"
       />
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" class="btn btn-warning">Update Product</button>
+    <button type="submit" class="btn btn-warning" style="background-color: #003366; border-color: #FFD700; color: #FFD700; font-weight: bold;">Update Product</button>
   </form>
 </div>
+
 <%- include("../../partials/footer") %>

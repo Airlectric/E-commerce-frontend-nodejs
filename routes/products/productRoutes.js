@@ -6,6 +6,7 @@ const FormData = require("form-data");
 const router = express.Router();
 const API_PRODUCT_URL = process.env.API_PRODUCT_URL;
 const API_CATEGORY_URL = process.env.API_CATEGORY_URL;
+const API_ORDER_URL = process.env.API_ORDER_URL;
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -31,10 +32,12 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const products = productResponse.data;
-	
-    res.render("pages/products/index", { products: products });
+
+    const { success, error } = req.query;
+
+    res.render("pages/products/index", { products, success, error });
   } catch (error) {
-    console.error("Error fetching seller's products or categories:", error.message);
+    console.error("Error fetching seller's products:", error.message);
     res.render("pages/products/index", { products: [], error: error.message });
   }
 });
@@ -184,15 +187,36 @@ router.post("/:id/delete", ensureAuthenticated, async (req, res) => {
     const { accessToken } = req.session;
     const { id } = req.params;
 
+    // Fetch all orders
+    const response = await axios.get(`${API_ORDER_URL}/orders/all`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const orders = response.data;
+
+    // Check if the product is associated with any order
+    const associatedOrders = orders.filter(order =>
+      order.products.some(product => product.productId === id)
+    );
+
+    // Check the status of associated orders
+    const hasPendingOrder = associatedOrders.some(order => order.status === "Pending");
+
+    if (hasPendingOrder) {
+      return res.redirect(`/products?error=Cannot delete the product as it is associated with a 'Pending' order.`);
+    }
+
+    // If no associated orders with "Pending" status, proceed to delete the product
     await axios.delete(`${API_PRODUCT_URL}/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    res.redirect("/products");
+    res.redirect(`/products?success=Product deleted successfully.`);
   } catch (error) {
     console.error("Error deleting product:", error.message);
-    res.redirect("/products");
+    res.redirect(`/products?error=Failed to delete the product.`);
   }
 });
+
 
 module.exports = router;
