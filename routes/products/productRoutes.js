@@ -32,6 +32,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const products = productResponse.data;
+	console.log('prods',products);
 
     const { success, error } = req.query;
 
@@ -82,12 +83,14 @@ router.post("/add", upload.single("imageFile"), async (req, res) => {
     if (req.file) {
       // If a file was uploaded, append it to FormData
       formData.append("imageFile", req.file.buffer, req.file.originalname);
+      console.log('Image file uploaded:', req.file.originalname); // Debugging statement
     } else if (image) {
       // If a URL is provided, just append the URL string as is
       formData.append("imageUrl", image);
+      console.log('Image URL provided:', image); // Debugging statement
     }
-	
-	console.log('formData:', formData);
+
+    console.log('Form data being sent:', formData); // Debugging statement
 
     // Send FormData to backend microservice
     const response = await axios.post(`${API_PRODUCT_URL}/`, formData, {
@@ -97,13 +100,24 @@ router.post("/add", upload.single("imageFile"), async (req, res) => {
       },
     });
 
+    console.log('Response from server:', response.data); // Debugging statement
+
     // After successful upload, redirect to products page
     res.redirect("/products");
   } catch (error) {
     console.error("Error adding product:", error.message);
+    
+    // Log the complete error response if available
+    if (error.response) {
+      console.error("Error response data:", error.response.data); // Log server response if available
+      console.error("Error response status:", error.response.status); // Log status code
+      console.error("Error response headers:", error.response.headers); // Log headers if needed
+    }
+
     res.render("pages/products/add", { error: error.message, categories: [] });
   }
 });
+
 
 
 
@@ -187,22 +201,28 @@ router.post("/:id/delete", ensureAuthenticated, async (req, res) => {
     const { accessToken } = req.session;
     const { id } = req.params;
 
+    console.log(`Attempting to delete product with ID: ${id}`); // Debugging statement
+
     // Fetch all orders
     const response = await axios.get(`${API_ORDER_URL}/orders/all`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     const orders = response.data;
+    console.log(`Fetched orders:`, orders); // Debugging statement
 
     // Check if the product is associated with any order
     const associatedOrders = orders.filter(order =>
       order.products.some(product => product.productId === id)
     );
 
+    console.log(`Associated orders for product ID ${id}:`, associatedOrders); // Debugging statement
+
     // Check the status of associated orders
     const hasPendingOrder = associatedOrders.some(order => order.status === "Pending");
 
     if (hasPendingOrder) {
+      console.warn(`Cannot delete product ID ${id} as it is associated with a 'Pending' order.`); // Warning log
       return res.redirect(`/products?error=Cannot delete the product as it is associated with a 'Pending' order.`);
     }
 
@@ -211,9 +231,18 @@ router.post("/:id/delete", ensureAuthenticated, async (req, res) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
+    console.log(`Product ID ${id} deleted successfully.`); // Debugging statement
     res.redirect(`/products?success=Product deleted successfully.`);
   } catch (error) {
     console.error("Error deleting product:", error.message);
+    
+    // Log detailed error response if available
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status);
+      console.error("Error response headers:", error.response.headers);
+    }
+
     res.redirect(`/products?error=Failed to delete the product.`);
   }
 });
