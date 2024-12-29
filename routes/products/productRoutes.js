@@ -32,14 +32,14 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const products = productResponse.data;
-	console.log('prods',products);
 
-    const { success, error } = req.query;
+    const success = req.query.success || null; // Ensure success is always defined
+    const error = req.query.error || null; // Ensure error is always defined
 
     res.render("pages/products/index", { products, success, error });
   } catch (error) {
     console.error("Error fetching seller's products:", error.message);
-    res.render("pages/products/index", { products: [], error: error.message });
+    res.render("pages/products/index", { products: [], success: null, error: error.message });
   }
 });
 
