@@ -51,8 +51,15 @@ router.post("/login", async (req, res) => {
 
     console.log("Tokens and user details stored successfully in session.");
 
-    // Redirect to the profile page
+    // Check if the user's role is SHOP_OWNER
+    if (user.role === "SHOP_OWNER") {
+      // Redirect to the role selection page
+      return res.redirect("/choose-role");
+    }
+
+    // Redirect to the home page for other roles
     res.redirect("/home");
+
   } catch (error) {
     console.error("Login Error:", error.response?.data || error.message);
     const errorMessage =
@@ -60,6 +67,21 @@ router.post("/login", async (req, res) => {
     res.render("pages/login", { error: errorMessage });
   }
 });
+
+
+// Route to handle role update after selection
+router.post("/update-role", (req, res) => {
+  const { role } = req.body;
+
+  // Check if the selected role is USER
+  if (role === "USER") {
+    req.session.user.role = "USER"; // Update the role in the session
+  }
+
+  // Redirect to home page after role update
+  res.redirect("/home");
+});
+
 
 
 // Edit Profile Handler

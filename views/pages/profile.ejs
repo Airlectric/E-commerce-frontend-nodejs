@@ -89,27 +89,27 @@
         <div class="profile-header">
           <img
             id="profileImage"
-            src="<%= user.profileImageUrl || 'https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg' %>"
+            src="<%= userDBdata.profileImageUrl || 'https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg' %>"
             alt="User Image"
             class="img-fluid rounded-circle mb-3"
             style="width: 150px; height: 150px; object-fit: cover;"
           />
-          <h5><%= user.name || user.username %></h5>
-          <p class="text-muted"><%= user.email %></p>
+          <h5><%= userDBdata.name || userDBdata.username %></h5>
+          <p class="text-muted"><%= userDBdata.email %></p>
         </div>
 
         <!-- Profile Information -->
         <div class="profile-info">
-          <p class="profile-section">Age: <%= user.age || 'N/A' %></p>
-          <p class="profile-section">Location: <%= user.location || 'Not specified' %></p>
+          <p class="profile-section">Age: <%= userDBdata.age || 'N/A' %></p>
+          <p class="profile-section">Location: <%= userDBdata.location || 'Not specified' %></p>
 
           <% if (user.role === 'SHOP_OWNER') { %>
             <!-- Shop Information for Shop Owner -->
             <div class="mt-4">
               <p class="section-title">Shop Details</p>
-              <p>Shop Name: <%= user.shopName || 'No shop available' %></p>
-              <p>Shop Description: <%= user.shopDescription || 'N/A' %></p>
-              <p>Shop Address: <%= user.shopAddress || 'N/A' %></p>
+              <p>Shop Name: <%= userDBdata.shopName || 'No shop available' %></p>
+              <p>Shop Description: <%= userDBdata.shopDescription || 'N/A' %></p>
+              <p>Shop Address: <%= userDBdata.shopAddress || 'N/A' %></p>
             </div>
           <% } else if (user.role === 'USER') { %>
             <!-- Additional user info can go here -->

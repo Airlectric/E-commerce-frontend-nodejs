@@ -28,6 +28,12 @@ router.get('/login', (req, res) => {
   });
 });
 
+router.get('/choose-role', (req, res) => {
+  res.render('pages/choose-role', { error: null, title: "Change Role - E-Commerce" });
+});
+
+
+
 // Home Page
 router.get('/home', (req, res) => {
   console.log('session pro:',req.session.user);
@@ -59,7 +65,8 @@ router.get("/profile", async (req, res) => {
     console.log('data:', data);
 
     res.render("pages/profile", {
-      user: data,
+	  user: req.session.user,
+      userDBdata: data,
       title: "Profile - ShopFlex",
     });
   } catch (error) {

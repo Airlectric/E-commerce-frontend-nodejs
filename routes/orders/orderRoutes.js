@@ -189,6 +189,12 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
           productNames.push(productResponse.data.title);
         } catch (productError) {
           console.error(`Failed to fetch product ${product.productId}:`, productError.message);
+          // Log additional details for debugging
+          console.error("Product fetch error details:", {
+            status: productError.response?.status,
+            data: productError.response?.data,
+            config: productError.config,
+          });
           productNames.push("Unknown Product"); // Handle missing product gracefully
         }
       }
@@ -200,7 +206,20 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
     res.render("pages/orders/orders", { orders });
   } catch (error) {
     console.error("Failed to fetch orders:", error.message);
-    res.status(500).send("Failed to fetch orders");
+    
+    // Log additional details for debugging
+    console.error("Order fetch error details:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      config: error.config,
+    });
+
+    // Send a detailed error response instead of just a status code
+    res.status(500).send({
+      message: "Failed to fetch orders",
+      error: error.message,
+      details: error.response?.data || "No additional information available."
+    });
   }
 });
 
