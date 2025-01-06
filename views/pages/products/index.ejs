@@ -134,7 +134,16 @@
        </div>
      <% } %>
    </div>
-
+     <script>
+    // Detect if the page is loaded in an iframe and hide both the navbar and footer if true
+    if (window.self !== window.top) {
+      document.addEventListener("DOMContentLoaded", () => {
+        // Hide navbar and footer if in iframe
+        document.querySelector('.navbar').style.display = 'none'; // Hide navbar
+        document.querySelector('footer').style.display = 'none'; // Hide footer
+      });
+    }
+  </script> 
    <%- include("../../partials/footer") %>
 
 </body>

@@ -1,21 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const keepAlive = require("../utils/keepAlive");
 
 const API_AUTH_URL = process.env.API_AUTH_URL;
+const notificationsServiceURL = process.env.KEEP_NOTI_ALIVE;
 
 // Landing Page
 router.get('/', (req, res) => {
+  keepAlive(notificationsServiceURL);
   res.render('pages/landing', { user: req.session.user, title: "ShopFlex" });
 });
 
 // Register Page
 router.get('/register', (req, res) => {
+  keepAlive(notificationsServiceURL);
   res.render('pages/register', { error: null, title: "Register - E-Commerce" });
 });
 
 // Login Page
 router.get('/login', (req, res) => {
+  keepAlive(notificationsServiceURL);
   res.render('pages/login', { 
     error: null, 
 	API_AUTH_URL: process.env.API_AUTH_URL,
