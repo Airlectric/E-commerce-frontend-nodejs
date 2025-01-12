@@ -10,4 +10,13 @@
     <button type="submit" class="btn btn-warning" style="background-color: #003366; border-color: #FFD700; color: #FFD700; font-weight: bold;">Add Category</button>
   </form>
 </div>
+    <script>
+        if (window.self !== window.top) {
+          document.addEventListener("DOMContentLoaded", () => {
+            // Hide navbar and footer if in iframe
+            document.querySelector('.navbar').style.display = 'none'; // Hide navbar
+            document.querySelector('footer').style.display = 'none'; // Hide footer
+          });
+        }
+    </script>
 <%- include("../../partials/footer") %>

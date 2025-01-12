@@ -1,3 +1,4 @@
+const { ensureAuthenticated } = require("../../middleware/ensureAuthentication");
 const express = require("express");
 const axios = require("axios");
 const multer = require("multer");
@@ -11,15 +12,6 @@ const API_ORDER_URL = process.env.API_ORDER_URL;
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Middleware to ensure user authentication using session
-const ensureAuthenticated = (req, res, next) => {
-  const { user, accessToken } = req.session;
-  if (user && accessToken) {
-    next();
-  } else {
-    res.redirect("/login");
-  }
-};
 
 // Display products for the logged-in seller (using user ID)
 router.get("/", ensureAuthenticated, async (req, res) => {
@@ -40,6 +32,29 @@ router.get("/", ensureAuthenticated, async (req, res) => {
   } catch (error) {
     console.error("Error fetching seller's products:", error.message);
     res.render("pages/products/index", { products: [], success: null, error: error.message });
+  }
+});
+
+
+// Product Details Page
+router.get("/product/:id", ensureAuthenticated, async (req, res) => {  // Ensure authentication here
+  try {
+    const { accessToken } = req.session;
+    console.log(`Fetching details for product ID: ${req.params.id} with access token:`, accessToken);
+
+    const response = await axios.get(`${API_PRODUCT_URL}/${req.params.id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    res.render("pages/products/productDetails", { product: response.data });
+  } catch (error) {
+    console.error("Error fetching product details:", error.message);
+	if (error.response) {
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status); 
+      console.error("Error response headers:", error.response.headers); 
+    }
+    res.status(500).send("Product not found");
   }
 });
 
@@ -106,20 +121,16 @@ router.post("/add", upload.single("imageFile"), async (req, res) => {
     res.redirect("/products");
   } catch (error) {
     console.error("Error adding product:", error.message);
-    
-    // Log the complete error response if available
+   
     if (error.response) {
-      console.error("Error response data:", error.response.data); // Log server response if available
-      console.error("Error response status:", error.response.status); // Log status code
-      console.error("Error response headers:", error.response.headers); // Log headers if needed
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status); 
+      console.error("Error response headers:", error.response.headers); 
     }
 
     res.render("pages/products/add", { error: error.message, categories: [] });
   }
 });
-
-
-
 
 
 

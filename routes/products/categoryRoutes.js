@@ -3,16 +3,7 @@ const axios = require("axios");
 
 const router = express.Router();
 const API_CATEGORY_URL = process.env.API_CATEGORY_URL;
-
-// Middleware to ensure user authentication using session
-const ensureAuthenticated = (req, res, next) => {
-  const { user, accessToken } = req.session;
-  if (user && accessToken) {
-    next();
-  } else {
-    res.redirect("/login");
-  }
-};
+const { ensureAuthenticated } = require("../../middleware/ensureAuthentication");
 
 // Display all categories
 router.get("/", ensureAuthenticated, async (req, res) => {

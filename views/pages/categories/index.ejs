@@ -37,5 +37,14 @@
     </table>
   <% } %>
 </div>
+    <script>
+        if (window.self !== window.top) {
+          document.addEventListener("DOMContentLoaded", () => {
+            // Hide navbar and footer if in iframe
+            document.querySelector('.navbar').style.display = 'none'; // Hide navbar
+            document.querySelector('footer').style.display = 'none'; // Hide footer
+          });
+        }
+    </script>
 
 <%- include("../../partials/footer") %>

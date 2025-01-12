@@ -48,7 +48,7 @@
               <li class="nav-item">
                 <a class="nav-link text-gold" href="/categories/" style="color: gold;">Categories</a>
               </li>
-			  <li class="nav-item">
+              <li class="nav-item">
                 <a class="nav-link text-gold" href="/choose-role/" style="color: gold;">Change Role</a>
               </li>
             <% } else if (user.role === 'USER') { %>
@@ -60,6 +60,22 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link text-gold" href="/order/cart" style="color: gold;">My Cart</a>
+              </li>
+            <% } else if (user.role === 'ADMIN') { %>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/admin/shop-owners" style="color: gold;">Shop Owners</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/admin/users" style="color: gold;">Users</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/admin/products" style="color: gold;">Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/admin/orders" style="color: gold;">Orders</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-gold" href="/categories" style="color: gold;">Categories</a>
               </li>
             <% } %>
           </ul>
@@ -80,6 +96,12 @@
           <!-- User - View Products Page -->
           <iframe 
             src="/order" 
+            style="width: 100%; height: calc(100vh - 20px); border: none;">
+          </iframe>
+        <% } else if (user.role === 'ADMIN') { %>
+          <!-- Admin - Dashboard -->
+          <iframe 
+            src="/admin/dashboard" 
             style="width: 100%; height: calc(100vh - 20px); border: none;">
           </iframe>
         <% } %>

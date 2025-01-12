@@ -1,20 +1,9 @@
+const { ensureAuthenticated } = require("../../middleware/ensureAuthentication");
 const express = require("express");
 const axios = require("axios");
 
 const router = express.Router();
 const API_ORDER_URL = process.env.API_ORDER_URL;
-
-// Middleware to ensure user authentication using session
-const ensureAuthenticated = (req, res, next) => {
-  const { user, accessToken } = req.session;
-  if (user && accessToken) {
-    console.log("User is authenticated:", user);
-    next();
-  } else {
-    console.log("User not authenticated, redirecting to login.");
-    res.redirect("/login");
-  }
-};
 
 
 // Home Page - List all products or search based on query params
@@ -66,9 +55,6 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     res.render("pages/orders/index", { products: [], cartCount: 0, error: error.message });
   }
 });
-
-
-
 
 
 

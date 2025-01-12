@@ -1,0 +1,91 @@
+<%- include('../../partials/header') %>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<div class="container-fluid">
+  <div class="row justify-content-center" style="min-height: 100vh; background: white; color: gold;">
+    <!-- Admin Dashboard Header -->
+    <div class="col-12 text-center my-4">
+      <h1 class="display-4" style="color: navy;">Admin Dashboard</h1>
+      <p class="lead" style="color: navy;">Manage your application with ease</p>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
+      <!-- Shop Owners -->
+      <div class="col">
+        <div class="card text-center h-100" style="background: #00264d; border: 2px solid gold; color: white;">
+          <div class="card-body">
+            <i class="bi bi-shop card-icon mb-3" style="font-size: 3rem; color: gold;"></i>
+            <h5 class="card-title" style="color: #FFD700;">Shop Owners</h5>
+            <p class="card-text">View and manage all shop owners in the system.</p>
+            <a href="/admin/shop-owners" class="btn btn-warning text-navy" style="font-weight: bold;">Manage Shop Owners</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="col">
+        <div class="card text-center h-100" style="background: #00264d; border: 2px solid gold; color: white;">
+          <div class="card-body">
+            <i class="bi bi-people card-icon mb-3" style="font-size: 3rem; color: gold;"></i>
+            <h5 class="card-title" style="color: #FFD700;">Users</h5>
+            <p class="card-text">Manage all registered users of the application.</p>
+            <a href="/admin/users" class="btn btn-warning text-navy" style="font-weight: bold;">Manage Users</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="col">
+        <div class="card text-center h-100" style="background: #00264d; border: 2px solid gold; color: white;">
+          <div class="card-body">
+            <i class="bi bi-box-seam card-icon mb-3" style="font-size: 3rem; color: gold;"></i>
+            <h5 class="card-title" style="color: #FFD700;">Products</h5>
+            <p class="card-text">View, edit, and manage all products listed by shop owners.</p>
+            <a href="/admin/products" class="btn btn-warning text-navy" style="font-weight: bold;">Manage Products</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="col">
+        <div class="card text-center h-100" style="background: #00264d; border: 2px solid gold; color: white;">
+          <div class="card-body">
+            <i class="bi bi-basket card-icon mb-3" style="font-size: 3rem; color: gold;"></i>
+            <h5 class="card-title" style="color: #FFD700;">Orders</h5>
+            <p class="card-text">Track and manage orders placed by users.</p>
+            <a href="/admin/orders" class="btn btn-warning text-navy" style="font-weight: bold;">Manage Orders</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="col">
+        <div class="card text-center h-100" style="background: #00264d; border: 2px solid gold; color: white;">
+          <div class="card-body">
+            <i class="bi bi-tags card-icon mb-3" style="font-size: 3rem; color: gold;"></i>
+            <h5 class="card-title" style="color: #FFD700;">Categories</h5>
+            <p class="card-text">Add, update, or delete product categories.</p>
+            <a href="/categories" class="btn btn-warning text-navy" style="font-weight: bold;">Manage Categories</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <script>
+        if (window.self !== window.top) {
+          document.addEventListener("DOMContentLoaded", () => {
+            // Hide navbar and footer if in iframe
+            document.querySelector('.navbar').style.display = 'none'; // Hide navbar
+            document.querySelector('footer').style.display = 'none'; // Hide footer
+          });
+        }
+    </script>
+
+<%- include('../../partials/footer') %>

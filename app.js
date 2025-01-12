@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const { createClient } = require('redis'); // Import Redis client
+const { createClient } = require('redis'); 
 const {RedisStore} = require("connect-redis");
 const favicon = require("serve-favicon");
 const path = require('path');
@@ -13,6 +13,7 @@ const axios = require('axios');
 
 const indexRoutes = require('./routes/indexRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/admin/adminRoutes');
 const orderRoutes = require('./routes/orders/orderRoutes');
 const productRoutes = require('./routes/products/productRoutes');
 const categoryRoutes = require('./routes/products/categoryRoutes');
@@ -25,7 +26,7 @@ const app = express();
 
 // Create a Redis client
 const redisClient = createClient({
-  url: process.env.REDIS_URL // Use your Redis URL or connection string
+  url: process.env.REDIS_URL 
 });
 
 redisClient.on('error', (err) => console.error('Redis Client Error:', err));
@@ -42,14 +43,14 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 // Configure session to use Redis
 app.use(
   session({
-    store: new RedisStore({ client: redisClient }), // Correct use of RedisStore
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false,  // Set to true if using HTTPS in production
+      secure: false,  
       httpOnly: true,
-      maxAge: 30 * 60 * 1000 // 30 minutes
+      maxAge: 30 * 60 * 1000 
     },
   })
 );
@@ -72,12 +73,13 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/', indexRoutes);
 app.use('/user', userRoutes);
+app.use('/admin', adminRoutes);
 app.use('/order', orderRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/products', productRoutes);
 
 // Set default app locals
-app.locals.title = "Shop Flex E-Commerce";
+app.locals.title = "ShopFlex E-Commerce";
 
 // Connect to Redis and start the server
 redisClient.connect()
