@@ -36,30 +36,48 @@ async function initiatePayment({ orderId, amount, paymentMethod, customerEmail }
   }
 }
 
+
 /**
- * Verifies a payment.
+ * Verifies a payment by calling the external payment verification API.
+ *
+ * @param {String} reference - The orderId (used as the reference) to verify payment.
+ * @returns {Promise<Object>} - An object with { success, data, message }.
  */
-async function verifyPayment({ paymentId, status }) {
-  const uri = `${_paymentBaseUrl}/payments/verify`;
-  console.log('Verifying payment with URI:', uri);
-
-  const requestBody = { paymentId, status };
-
+async function verifyPayment(reference) {
   try {
+    console.log(`Verifying payment with reference: ${reference}`);
+    const uri = `${_paymentBaseUrl}/payments/verifyPayment`;
+    console.log(`Verifying payment with URI: ${uri}`);
+
+    const requestBody = { reference };
+
     const response = await axios.post(uri, requestBody, {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
-    console.log('Payment verification response:', response.status);
-    console.log('Response body:', response.data);
+
+    console.log(`Payment verification response: ${response.status}`);
+    console.log(`Response data: ${JSON.stringify(response.data)}`);
 
     if (response.status !== 200) {
-      throw new Error(`Failed to verify payment: ${response.status} - ${JSON.stringify(response.data)}`);
+      console.error(
+        `Payment verification failed: ${response.status} - ${JSON.stringify(response.data)}`
+      );
+      throw new Error(
+        `Payment verification failed: ${response.status} - ${JSON.stringify(response.data)}`
+      );
     }
+
+    return {
+      success: true,
+      data: response.data,
+      message: 'Payment verification successful',
+    };
   } catch (error) {
-    console.error('Error verifying payment:', error.message);
-    throw error;
+    console.error("Error in verifyPayment:", error);
+    throw new Error(`Error verifying payment: ${error.message || error}`);
   }
 }
+
 
 module.exports = {
   initiatePayment,

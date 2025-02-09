@@ -4,7 +4,7 @@ const router = express.Router();
 const PaymentService = require('../services/PaymentService');
 const axios = require('axios');
 const { ensureAuthenticated } = require('../../middleware/ensureAuthentication');
-
+const _paymentBaseUrl = process.env.API_PAYMENT_URL
 
 
 // GET /checkout - Render the checkout page with order details.
@@ -64,5 +64,28 @@ router.post('/payment', ensureAuthenticated, async (req, res) => {
     res.redirect('/checkout/');
   }
 });
+
+
+
+router.get('/verifyPayment/:orderId', ensureAuthenticated, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+  
+    console.log(`Received verifyPayment GET for orderId: ${orderId}`);
+
+    // Call the PaymentService to verify the payment using the orderId as the reference
+    const data = await PaymentService.verifyPayment(orderId);
+    console.log(`Rendering verifyPayment page for orderId: ${orderId} with data:`, data);
+
+    // Render the view and pass the orderId and the verification data
+    res.render('pages/verifyPayment', { orderId, data });
+  } catch (error) {
+    console.error("Error rendering verifyPayment page:", error);
+    res.status(500).send("Error rendering verification page.");
+  }
+});
+
+
+
 
 module.exports = router;

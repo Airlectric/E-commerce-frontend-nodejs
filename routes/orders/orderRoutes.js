@@ -161,7 +161,7 @@ router.post('/checkout', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Orders Page
+
 // Orders Page with Filters and Sorting
 router.get("/orders", ensureAuthenticated, async (req, res) => {
   try {
@@ -177,23 +177,38 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
 
     let orders = response.data;
 
-    // Fetch product titles for each order
+    // Extract unique productIds from all orders
+    const uniqueProductIds = new Set();
+    for (const order of orders) {
+      for (const product of order.products) {
+        uniqueProductIds.add(product.productId);
+      }
+    }
+
+    // Fetch all products in bulk
+    const productResponse = await axios.get(`${API_ORDER_URL}/products/`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const allProducts = productResponse.data;
+
+    // Create a map of productId to product title
+    const productTitleMap = new Map();
+    for (const product of allProducts) {
+      productTitleMap.set(product._id, product.title); // Assuming product objects have an _id property
+    }
+
+    // Populate product names for each order
     for (const order of orders) {
       const productNames = [];
-
       for (const product of order.products) {
-        try {
-          const productResponse = await axios.get(`${API_ORDER_URL}/products/${product.productId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-
-          productNames.push(productResponse.data.title);
-        } catch (productError) {
-          console.error(`Failed to fetch product ${product.productId}:`, productError.message);
+        const title = productTitleMap.get(product.productId);
+        if (title) {
+          productNames.push(title);
+        } else {
+          console.error(`Product ${product.productId} not found`);
           productNames.push("Unknown Product");
         }
       }
-
       order.productNames = productNames;
     }
 
@@ -213,14 +228,15 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
 
     res.render("pages/orders/orders", { orders, timeFilter, paymentStatusFilter });
   } catch (error) {
-    console.error("Failed to fetch orders:", error.message);
-    res.status(500).send({
+    console.error("Failed to fetch orders:", error); // Log entire error object
+
+    res.status(500).render("error", { 
       message: "Failed to fetch orders",
-      error: error.message,
-      details: error.response?.data || "No additional information available.",
+      error: error,  // Pass the entire error object for detailed display
     });
   }
 });
+
 
 // Payment Route
 router.get("/checkout/:orderId", ensureAuthenticated, async (req, res) => {
