@@ -123,13 +123,14 @@ router.post("/cart/remove", ensureAuthenticated, (req, res) => {
 });
 
 // Checkout
-router.post("/checkout", ensureAuthenticated, async (req, res) => {  // Ensure authentication here
+router.post('/checkout', ensureAuthenticated, async (req, res) => {
   try {
     const cart = req.session.cart || [];
     const { accessToken } = req.session;
 
-    console.log("Checking out with cart items:", cart);
+    console.log('Checking out with cart items:', cart);
 
+    // Create the order by calling your order microservice
     const response = await axios.post(
       `${API_ORDER_URL}/orders`,
       { products: cart },
@@ -138,19 +139,34 @@ router.post("/checkout", ensureAuthenticated, async (req, res) => {  // Ensure a
       }
     );
 
-    console.log("Checkout successful:", response.data);
-    req.session.cart = []; // Clear cart after successful order
-    res.redirect("/order/orders");
+    console.log('Order created successfully:', response.data);
+
+    // Extract the orderId and amount from the response
+    const { _id, totalAmount } = response.data;
+	console.log(response.data);
+	
+	orderId = _id;
+
+    // Clear cart after successful order
+    req.session.cart = [];
+
+    // Save order info to session to pass to the checkout page
+    req.session.paymentInfo = { orderId, amount: totalAmount };
+
+    // Redirect to the checkout page
+    res.redirect('/checkout');
   } catch (error) {
-    console.error("Checkout failed:", error.message);
-    res.status(500).send("Checkout failed");
+    console.error('Checkout failed:', error.message);
+    res.status(500).send('Checkout failed');
   }
 });
 
 // Orders Page
+// Orders Page with Filters and Sorting
 router.get("/orders", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
+    const { timeFilter = "Recent First", paymentStatusFilter = "All" } = req.query;
 
     console.log("Fetching orders with access token:", accessToken);
 
@@ -159,13 +175,12 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    const orders = response.data;
+    let orders = response.data;
 
     // Fetch product titles for each order
     for (const order of orders) {
       const productNames = [];
 
-      // Fetch details for each product in the order
       for (const product of order.products) {
         try {
           const productResponse = await axios.get(`${API_ORDER_URL}/products/${product.productId}`, {
@@ -175,36 +190,59 @@ router.get("/orders", ensureAuthenticated, async (req, res) => {
           productNames.push(productResponse.data.title);
         } catch (productError) {
           console.error(`Failed to fetch product ${product.productId}:`, productError.message);
-          // Log additional details for debugging
-          console.error("Product fetch error details:", {
-            status: productError.response?.status,
-            data: productError.response?.data,
-            config: productError.config,
-          });
-          productNames.push("Unknown Product"); // Handle missing product gracefully
+          productNames.push("Unknown Product");
         }
       }
 
-      // Add product names to the order
       order.productNames = productNames;
     }
 
-    res.render("pages/orders/orders", { orders });
-  } catch (error) {
-    console.error("Failed to fetch orders:", error.message);
-    
-    // Log additional details for debugging
-    console.error("Order fetch error details:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      config: error.config,
+    // Apply filters and sorting
+    orders = orders.filter(order => {
+      if (paymentStatusFilter && paymentStatusFilter !== "All") {
+        return order.paymentStatus.toLowerCase() === paymentStatusFilter.toLowerCase();
+      }
+      return true;
     });
 
-    // Send a detailed error response instead of just a status code
+    orders.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return timeFilter === "Recent First" ? dateB - dateA : dateA - dateB;
+    });
+
+    res.render("pages/orders/orders", { orders, timeFilter, paymentStatusFilter });
+  } catch (error) {
+    console.error("Failed to fetch orders:", error.message);
     res.status(500).send({
       message: "Failed to fetch orders",
       error: error.message,
-      details: error.response?.data || "No additional information available."
+      details: error.response?.data || "No additional information available.",
+    });
+  }
+});
+
+// Payment Route
+router.get("/checkout/:orderId", ensureAuthenticated, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { accessToken } = req.session;
+
+    // Fetch order details
+    const orderResponse = await axios.get(`${API_ORDER_URL}/orders/${orderId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const order = orderResponse.data;
+	amount = order.totalAmount;
+
+    const paymentMethods = ['Paystack', 'PayPal', 'Flutterwave', 'Stripe'];
+    res.render('pages/orders/checkout', { orderId, amount, paymentMethods })
+  } catch (error) {
+    console.error("Failed to process payment:", error.message);
+    res.status(500).send({
+      message: "Failed to process payment",
+      error: error.message,
     });
   }
 });

@@ -203,62 +203,51 @@ router.get("/orders/:id", ensureAuthenticated, async (req, res) => {
 });
 
 
-
-// All orders
+//All orders
 router.get("/orders/", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
-
     console.log("Fetching orders with access token:", accessToken);
 
-    // Fetch orders
-    const response = await axios.get(`${API_ORDER_URL}/orders/all`, {
+    // Fetch orders from the orders API
+    const ordersResponse = await axios.get(`${API_ORDER_URL}/orders/all`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
+    const orders = ordersResponse.data;
 
-    const orders = response.data;
+    // Fetch all products in bulk
+    const productsResponse = await axios.get(`${API_ORDER_URL}/products/`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const allProducts = productsResponse.data;
 
-    // Fetch product titles for each order
+    // Create a map of productId to product details for quick lookup
+    const productMap = allProducts.reduce((map, product) => {
+      map[product.id] = product;
+      return map;
+    }, {});
+
+    // Attach product details to each order
     for (const order of orders) {
-      const productNames = [];
-
-      // Fetch details for each product in the order
-      for (const product of order.products) {
-        try {
-          const productResponse = await axios.get(`${API_ORDER_URL}/products/${product.productId}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-
-          productNames.push(productResponse.data.title);
-        } catch (productError) {
-          console.error(`Failed to fetch product ${product.productId}:`, productError.message);
-          // Log additional details for debugging
-          console.error("Product fetch error details:", {
-            status: productError.response?.status,
-            data: productError.response?.data,
-            config: productError.config,
-          });
-          productNames.push("Unknown Product"); // Handle missing product gracefully
-        }
-      }
-
-      // Add product names to the order
-      order.productNames = productNames;
+      order.productNames = order.products.map(product => {
+        const productDetails = productMap[product.productId] || { title: "Unknown Product" };
+        return {
+          title: productDetails.title,
+          status: product.status,
+        };
+      });
     }
 
+    // Render the orders page and pass the orders to the view.
     res.render("pages/admin/orders", { orders });
   } catch (error) {
     console.error("Failed to fetch orders:", error.message);
-    
-    // Log additional details for debugging
     console.error("Order fetch error details:", {
       status: error.response?.status,
       data: error.response?.data,
       config: error.config,
     });
-
-    // Send a detailed error response instead of just a status code
-	res.render("error", { error: error.message || "Failed to fetch orders"  });
+    res.render("error", { error: error.message || "Failed to fetch orders" });
   }
 });
 
@@ -268,53 +257,46 @@ router.get("/orders/", ensureAuthenticated, async (req, res) => {
 router.get("/order/:id", ensureAuthenticated, async (req, res) => {
   try {
     const { accessToken } = req.session;
-    const orderId = req.params.id;  // Capture the order ID from the URL
+    const orderId = req.params.id; // Capture the order ID from the URL
     console.log(`Fetching details for order ID: ${orderId} with access token:`, accessToken);
 
     // Fetch the order details from the API
     const orderResponse = await axios.get(`${API_ORDER_URL}/orders/${orderId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-
-    
     const order = orderResponse.data;
-    
+
     // Fetch details for each product in the order
+    // Each product in order.products should have productId, quantity, and status
     const productPromises = order.products.map(async (product) => {
       const productResponse = await axios.get(`${API_ORDER_URL}/products/${product.productId}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-
-      // Return merged data, ensuring `quantity` comes from `order.products`
       return {
-        ...productResponse.data,  // Product details
-        quantity: product.quantity,  // Ordered quantity
+        ...productResponse.data,         // Product details from the API
+        quantity: product.quantity,        // Ordered quantity from the order object
+        status: product.status             // Product status from the order object
       };
     });
-
-    // Wait for all the product details to be fetched
     const productsWithDetails = await Promise.all(productPromises);
-
-    // Update the order object with the full product details
     order.products = productsWithDetails;
 
-    // Render the order details page with the order information and product details
+    // Render the order details page with the complete order info
     res.render("pages/admin/orderDetails", { 
-	order,
-	success: null, 
-    error: null, 
-	});
+      order,
+      success: null, 
+      error: null 
+    });
   } catch (error) {
     console.error("Error fetching order details:", error.message);
-	if (error.response) {
+    if (error.response) {
       console.error("Error response data:", error.response.data);
       console.error("Error response status:", error.response.status); 
       console.error("Error response headers:", error.response.headers); 
     }
-    res.status(500).send("Order not foundd");
+    res.status(500).send("Order not found");
   }
 });
-
 
 
 // Update order status (Admin only)

@@ -9,6 +9,7 @@ const favicon = require("serve-favicon");
 const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
+const flash = require('connect-flash'); 
 
 
 const indexRoutes = require('./routes/indexRoutes');
@@ -17,6 +18,7 @@ const adminRoutes = require('./routes/admin/adminRoutes');
 const orderRoutes = require('./routes/orders/orderRoutes');
 const productRoutes = require('./routes/products/productRoutes');
 const categoryRoutes = require('./routes/products/categoryRoutes');
+const checkoutRoutes = require('./routes/checkout/checkoutRoutes');
 const cartCountMiddleware = require("./middleware/cartCount");
 const methodOverride = require('method-override');
 
@@ -38,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(methodOverride('_method'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(flash()); 
 
 
 // Configure session to use Redis
@@ -77,6 +80,7 @@ app.use('/admin', adminRoutes);
 app.use('/order', orderRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/products', productRoutes);
+app.use('/checkout', checkoutRoutes);
 
 // Set default app locals
 app.locals.title = "ShopFlex E-Commerce";

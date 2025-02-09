@@ -8,6 +8,7 @@ const router = express.Router();
 const API_PRODUCT_URL = process.env.API_PRODUCT_URL;
 const API_CATEGORY_URL = process.env.API_CATEGORY_URL;
 const API_ORDER_URL = process.env.API_ORDER_URL;
+const API_AUTH_URL = process.env.API_AUTH_URL;
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -257,6 +258,168 @@ router.post("/:id/delete", ensureAuthenticated, async (req, res) => {
     res.redirect(`/products?error=Failed to delete the product.`);
   }
 });
+
+
+/**
+ * GET /products/shop-orders
+ * Fetches shop orders from the backend, stores them in session,
+ * and then renders the shop orders page.
+ */
+router.get('/shop-orders', ensureAuthenticated, async (req, res) => {
+  try {
+    const { user, accessToken } = req.session;
+    const ordersBaseUrl = process.env.API_ORDER_URL; 
+    const url = `${ordersBaseUrl}/orders/seller/${user.id}`;
+
+    console.log('Access Token:', accessToken);
+    console.log('User ID:', user.id);
+    console.log('Making GET request to:', url);
+
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 200) {
+      let orders = response.data;
+      
+      // Retrieve filter values from query parameters (or use defaults)
+      const selectedTimeFilter = req.query.sortFilter || "Recent First";
+      const selectedStatusFilter = req.query.statusFilter || "All";
+      const selectedPaymentFilter = req.query.paymentFilter || "All";
+
+      // Helper function to determine overall order status
+      function getOrderStatus(order) {
+        const products = order.products || [];
+        const deliveredCount = products.filter(p => (p.status || "").toLowerCase() === "delivered").length;
+        if (products.length > 0 && deliveredCount === products.length) {
+          return "Completed";
+        } else if (deliveredCount === 0) {
+          return "Not Completed";
+        } else {
+          return "Partially Completed";
+        }
+      }
+
+      // Filter orders based on status and payment filters
+      orders = orders.filter(order => {
+        const overallStatus = getOrderStatus(order);
+        const paymentStatus = order.paymentStatus || "Unknown";
+        
+        if (selectedStatusFilter !== "All" && overallStatus !== selectedStatusFilter) {
+          return false;
+        }
+        if (selectedPaymentFilter !== "All" && paymentStatus !== selectedPaymentFilter) {
+          return false;
+        }
+        return true;
+      });
+
+      // Sort orders by creation date based on the time filter
+      orders.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return selectedTimeFilter === "Recent First" ? dateB - dateA : dateA - dateB;
+      });
+
+      // Store the filtered orders in the session for later use (e.g., in the order details page)
+      req.session.orders = orders;
+
+      // Render the shop orders page with the filtered and sorted orders, plus the filter selections.
+      res.render("pages/products/shopOrders", {
+        orders,
+        selectedTimeFilter,
+        selectedStatusFilter,
+        selectedPaymentFilter
+      });
+    } else {
+      res.status(response.status).json({
+        message: `Failed to load shop orders, status code: ${response.status}`
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching shop orders:", error.message || error);
+    res.status(500).json({ message: "Error fetching shop orders", error: error.message });
+  }
+});
+
+
+
+
+/**
+ * GET /shop-order-details/:orderId
+ * Retrieves an order’s details from session storage (instead of calling the backend)
+ * and renders the order details page.
+ */
+router.get('/shop-order-details/:orderId', ensureAuthenticated, async (req, res) => {
+  try {
+    const orders = req.session.orders;
+    const orderId = req.params.orderId;
+	const accessToken = req.session.accessToken;
+
+    if (!orders) {
+      return res.status(404).send("Orders not found in session. Please reload the shop orders page.");
+    }
+
+    // Find the order (using either _id or orderId property)
+    const order = orders.find(o => o._id == orderId || o.orderId == orderId);
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+  const { data }  = await axios.get(`${API_AUTH_URL}/profile/${order.user.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+	
+	userDetails = data;
+
+    res.render("pages/products/shopOrderDetails", { order, userDetails });
+  } catch (error) {
+    console.error("Error rendering order details:", error.message || error);
+    res.status(500).send("Error rendering order details");
+  }
+});
+
+/**
+ * PATCH /orders/:orderId/product/:productId/status
+ * Updates the status of a product within an order.
+ */
+router.patch('/orders/:orderId/product/:productId/status', ensureAuthenticated, async (req, res) => {
+  try {
+    const { orderId, productId } = req.params;
+    const { status: newStatus } = req.body;
+    const { accessToken } = req.session;
+    const ordersBaseUrl = process.env.API_ORDER_URL;
+    const url = `${ordersBaseUrl}/orders/${orderId}/product/${productId}/status`;
+
+    console.log("Updating product status:", { orderId, productId, newStatus });
+    const response = await axios.patch(url, { status: newStatus }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log("Response status code:", response.status);
+    if (response.status === 200) {
+      console.log("Product status updated successfully.");
+      res.status(200).json({ message: 'Product status updated successfully' });
+    } else {
+      res.status(response.status).json({
+        message: `Failed to update product status, status code: ${response.status}`
+      });
+    }
+  } catch (error) {
+    console.error("Error updating product status:", error.message || error);
+    res.status(500).json({ message: "Error updating product status", error: error.message });
+  }
+});
+
+
 
 
 module.exports = router;

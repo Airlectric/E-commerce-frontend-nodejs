@@ -12,7 +12,6 @@
     body {
       background-color: #eef2f7;
     }
-
     .container {
       margin-top: 50px;
       background-color: white;
@@ -20,7 +19,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       padding: 30px;
     }
-
     .order-header {
       background-color: #003366;
       color: white;
@@ -28,36 +26,29 @@
       border-radius: 10px;
       text-align: center;
     }
-
     .order-header h1 {
       font-size: 2rem;
       margin: 0;
     }
-
     .order-info {
       margin-top: 20px;
     }
-
     .order-info h4 {
       color: #333;
     }
-
     .table {
       margin-top: 20px;
     }
-
     .product-image img {
       max-width: 80px;
       border-radius: 5px;
     }
-
     .btn-group {
       margin-top: 30px;
       display: flex;
       gap: 15px;
       justify-content: center;
     }
-
     .btn {
       padding: 10px 20px;
       font-size: 1rem;
@@ -69,17 +60,16 @@
 <body>
   <div class="container">
     <!-- Flash Messages -->
-     <!-- Display success or error messages -->
-     <% if (success) { %>
-       <div class="alert alert-success" role="alert">
-         <%= success %>
-       </div>
-     <% } %>
-     <% if (error) { %>
-       <div class="alert alert-danger" role="alert">
-         <%= error %>
-       </div>
-     <% } %>
+    <% if (success) { %>
+      <div class="alert alert-success" role="alert">
+        <%= success %>
+      </div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert alert-danger" role="alert">
+        <%= error %>
+      </div>
+    <% } %>
 
     <!-- Order Header -->
     <div class="order-header">
@@ -107,6 +97,7 @@
         <tr>
           <th>Product</th>
           <th>Quantity</th>
+          <th>Status</th>
           <th>Price</th>
           <th>Description</th>
           <th>Image</th>
@@ -123,6 +114,15 @@
               </strong>
             </td>
             <td><%= product.quantity %></td>
+            <td>
+              <span class="badge bg-<%= 
+                product.status === 'Pending' ? 'warning' : 
+                product.status === 'Shipped' ? 'info' : 
+                product.status === 'Delivered' ? 'success' : 
+                product.status === 'Cancelled' ? 'danger' : 'secondary' %>">
+                <%= product.status %>
+              </span>
+            </td>
             <td>$<%= parseFloat(product.price).toFixed(2) %></td>
             <td><%= product.description || 'No description available' %></td>
             <td class="product-image">
@@ -138,7 +138,7 @@
               <% } %>
             </td>
           </tr>
-        <% }) %>
+        <% }); %>
       </tbody>
     </table>
 
