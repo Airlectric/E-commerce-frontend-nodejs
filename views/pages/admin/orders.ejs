@@ -69,6 +69,18 @@
                     <%= order.status %>
                   </span>
                 </p>
+				<p>
+                <strong>Payment Status:</strong> 
+                <span class="badge bg-<%= order.paymentStatus === "success" ? "success" : order.paymentStatus === "pending" ? "warning" : "secondary" %>">
+                  <%= order.paymentStatus %>
+                </span>
+              </p>
+				<% if (order.paymentStatus === 'success') { %>
+				<!-- Instead of an inline JS function, use a direct link to the verification route -->
+				<a href="/checkout/verifyPayment/<%= order._id %>" class="btn btn-sm btn-success me-2">
+				  <i class="fas fa-check-circle"></i> Verify Payment
+				</a>
+				<% } %>
                 <p><strong>Created At:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
                 <p>
                   <strong>Products:</strong>

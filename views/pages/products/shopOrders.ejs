@@ -120,6 +120,12 @@
                   <%= order.paymentStatus %>
                 </span>
               </p>
+			<% if (order.paymentStatus === 'success') { %>
+            <!-- Instead of an inline JS function, use a direct link to the verification route -->
+            <a href="/checkout/verifyPayment/<%= order.orderId %>" class="btn btn-sm btn-success me-2">
+              <i class="fas fa-check-circle"></i> Verify Payment
+            </a>
+            <% } %>
               <p>
                 <strong>Order Status:</strong> 
                 <span class="badge bg-<%= overallStatus === "Completed" ? "success" : overallStatus === "Partially Completed" ? "info" : "danger" %>">
