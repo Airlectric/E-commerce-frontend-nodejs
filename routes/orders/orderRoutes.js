@@ -122,6 +122,9 @@ router.post("/cart/remove", ensureAuthenticated, (req, res) => {
   res.redirect("/order/cart");
 });
 
+
+
+
 // Checkout
 router.post('/checkout', ensureAuthenticated, async (req, res) => {
   try {
@@ -251,9 +254,11 @@ router.get("/checkout/:orderId", ensureAuthenticated, async (req, res) => {
 
     const order = orderResponse.data;
 	amount = order.totalAmount;
+	console.log(orderId);
+	console.log(amount);
 
     const paymentMethods = ['Paystack', 'PayPal', 'Flutterwave', 'Stripe'];
-    res.render('pages/orders/checkout', { orderId, amount, paymentMethods })
+    res.render('pages/orders/checkout', { orderId, amount, paymentMethods });
   } catch (error) {
     console.error("Failed to process payment:", error.message);
     res.status(500).send({

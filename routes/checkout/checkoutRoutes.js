@@ -18,7 +18,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
 });
 
 
-router.get('/webview', ensureAuthenticated, (req, res) => {
+router.get('/webview/', ensureAuthenticated, (req, res) => {
   const { url, paymentId } = req.query;
   if (!url || !paymentId) {
     return res.status(400).send("Missing payment information.");
@@ -31,7 +31,7 @@ router.get('/webview', ensureAuthenticated, (req, res) => {
 
 
 // POST /checkout/payment - Process the payment.
-router.post('/payment', ensureAuthenticated, async (req, res) => {
+router.post('/payment/', ensureAuthenticated, async (req, res) => {
   try {
     const { orderId, amount, paymentMethod } = req.body;
     // Retrieve customer email from session (adjust if needed)
